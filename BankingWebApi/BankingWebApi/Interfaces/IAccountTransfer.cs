@@ -1,9 +1,8 @@
-﻿namespace BankingWebApi.Interfaces
+﻿namespace BankingWebApi.Interfaces;
+
+public interface IAccountTransfer
 {
-    public interface IAccountTransfer
-    {
-        Guid TransferFromId { get; set; }
-        Guid TransferToId { get; set; }
-        decimal Amount { get; set; }
-    }
+    Guid TransferFromId { get; set; }
+    Guid TransferToId { get; set; }
+    decimal Amount { get; set; }
 }
