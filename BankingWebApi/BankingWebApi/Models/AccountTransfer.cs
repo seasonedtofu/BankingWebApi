@@ -1,6 +1,8 @@
-﻿namespace BankingWebApi.Models
+﻿using BankingWebApi.Interfaces;
+
+namespace BankingWebApi.Models
 {
-    public class AccountTransfer
+    public class AccountTransfer: IAccountTransfer
     {
         public Guid TransferFromId { get; set; }
         public Guid TransferToId { get; set; }
