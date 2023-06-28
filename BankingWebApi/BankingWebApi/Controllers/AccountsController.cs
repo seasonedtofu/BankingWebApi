@@ -17,14 +17,12 @@ public class AccountsController : ControllerBase
         _context = context;
     }
 
-    // GET: api/Accounts
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
     {
         return await _context.Accounts.ToListAsync();
     }
 
-    // GET: api/Accounts/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Account>> GetAccount(Guid id)
     {
@@ -38,7 +36,6 @@ public class AccountsController : ControllerBase
         return account;
     }
 
-    // PUT: api/Accounts/5
     [HttpPut("{id}/Name")]
     public async Task<IActionResult> ChangeName(Guid id, string name)
     {
@@ -134,7 +131,6 @@ public class AccountsController : ControllerBase
         return NoContent();
     }
 
-    // POST: api/Accounts
     [HttpPost]
     public async Task<ActionResult<AccountCreate>> PostAccount(AccountCreate accountCreate)
     {
@@ -175,7 +171,6 @@ public class AccountsController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/Accounts/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAccount(Guid id)
     {
@@ -193,8 +188,6 @@ public class AccountsController : ControllerBase
         {
             return ErrorResponse.Response("Account currently has a balance greater than 0, please withdraw first.", HttpStatusCode.BadRequest);
         }
-
-
 
         account.Active = false;
         account.UpdatedDate = DateTime.UtcNow;
