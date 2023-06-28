@@ -2,6 +2,9 @@
 
 namespace BankingWebApi.Models;
 
+/// <summary>
+/// Shape of object for transferring money between accounts endpoint.
+/// </summary>
 public class AccountTransfer: IAccountTransfer
 {
     public Guid TransferFromId { get; set; }

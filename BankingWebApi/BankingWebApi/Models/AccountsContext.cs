@@ -2,7 +2,9 @@
 
 namespace BankingWebApi.Models;
 
-
+/// <summary>
+/// Stores accounts locally.
+/// </summary>
 public class AccountsContext: DbContext
 {
     public AccountsContext(DbContextOptions<AccountsContext> options)

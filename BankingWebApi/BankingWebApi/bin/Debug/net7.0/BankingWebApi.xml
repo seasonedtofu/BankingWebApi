@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BankingWebApi</name>
+    </assembly>
+    <members>
+        <member name="M:BankingWebApi.Controllers.AccountsController.GetAccounts">
+            <summary>
+            Gets all accounts.
+            </summary>
+            <returns>
+            List of all accounts or empty list if no accounts found.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.GetAccount(System.Guid)">
+            <summary>
+            Gets account by id.
+            </summary>
+            <param name="id"></param>
+            <returns>
+            Account if found or 404 if not found.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.ChangeName(System.Guid,System.String)">
+            <summary>
+            Changes name property of account.
+            </summary>
+            <param name="id"></param>
+            <param name="name"></param>
+            <returns>
+            204 if account name successfully changes or 404 if account not found.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.Deposit(System.Guid,System.Decimal)">
+            <summary>
+            Deposits money into an account balance.
+            </summary>
+            <param name="id"></param>
+            <param name="amount"></param>
+            <returns>
+            204 status code if successful, 404 if account not found.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.Withdraw(System.Guid,System.Decimal)">
+            <summary>
+            Withdraws money from account balance.
+            </summary>
+            <param name="id"></param>
+            <param name="amount"></param>
+            <returns>
+            204 status code if successful, 404 if account not found, or 400 if account balance is less than withdrawal amount.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.Transfer(BankingWebApi.Models.AccountTransfer)">
+            <summary>
+            Transfers a provided amount from one user's account to another users's account.
+            </summary>
+            <param name="accountTransfer"></param>
+            <returns>
+            Returns 204 if successful, 400 if any account does not exist OR if account transfer amount is more than what exists from withdrawal account.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.PostAccount(BankingWebApi.Models.AccountCreate)">
+            <summary>
+            Creates an account.
+            </summary>
+            <param name="accountCreate"></param>
+            <returns>
+            If successful, returns account object.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.ReactivateAccount(System.Guid)">
+            <summary>
+            Reactivates a deactivated account.
+            </summary>
+            <param name="id"></param>
+            <returns>
+            204 if successful, 400 if account is not found.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.DeleteAccount(System.Guid)">
+            <summary>
+            Soft deletes an account.
+            </summary>
+            <param name="id"></param>
+            <returns>
+            204 if successful, 400 if account is already active or if account balance is still greater than 0.
+            </returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:BankingWebApi.Utils.ErrorResponse.Response(System.String,System.Net.HttpStatusCode)" -->
+        <!-- Badly formed XML comment ignored for member "M:BankingWebApi.Utils.ErrorResponse.NotFound(System.Net.HttpStatusCode)" -->
+    </members>
+</doc>
