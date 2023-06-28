@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BankingWebApi.Models;
-using System.Net.Http.Headers;
+using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace BankingWebApi.Controllers
 {
@@ -25,10 +21,10 @@ namespace BankingWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
         {
-          if (_context.Accounts == null)
-          {
-              return NotFound();
-          }
+            if (_context.Accounts == null)
+            {
+                return NotFound();
+            }
             return await _context.Accounts.ToListAsync();
         }
 
@@ -36,15 +32,16 @@ namespace BankingWebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Account>> GetAccount(Guid id)
         {
-          if (_context.Accounts == null)
-          {
-              return NotFound();
-          }
+            if (_context.Accounts == null)
+            {
+                return NotFound();
+            }
+
             var account = await _context.Accounts.FindAsync(id);
 
             if (account == null)
             {
-                return NotFound();
+                return ErrorResponse("Could not find account with provided GUID.", HttpStatusCode.NotFound);
             }
 
             return account;
@@ -58,7 +55,7 @@ namespace BankingWebApi.Controllers
 
             if (account == null)
             {
-                return BadRequest();
+                return ErrorResponse("Could not find account with provided GUID.", HttpStatusCode.BadRequest);
             }
 
             account.Name = name;
@@ -74,7 +71,7 @@ namespace BankingWebApi.Controllers
 
             if (account == null)
             {
-                return BadRequest();
+                return ErrorResponse("Could not find account with provided GUID.", HttpStatusCode.BadRequest);
             }
 
             account.Active = active;
@@ -83,14 +80,14 @@ namespace BankingWebApi.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}/Deposit")]
+        [HttpPost("{id}/Deposit")]
         public async Task<IActionResult> Deposit(Guid id, decimal amount)
         {
             var account = await _context.Accounts.FindAsync(id);
 
             if (account == null)
             {
-                return BadRequest();
+                return ErrorResponse("Could not find account with provided GUID.", HttpStatusCode.BadRequest);
             }
 
             account.Balance += amount;
@@ -99,14 +96,18 @@ namespace BankingWebApi.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}/Withdraw")]
+        [HttpPost("{id}/Withdraw")]
         public async Task<IActionResult> Withdraw(Guid id, decimal amount)
         {
             var account = await _context.Accounts.FindAsync(id);
 
-            if (account == null || amount > account.Balance)
+            if (account == null)
             {
-                return BadRequest();
+                return ErrorResponse("Could not find account with provided GUID.", HttpStatusCode.BadRequest);
+            }
+            else if (amount > account.Balance)
+            {
+                return ErrorResponse("Amount entered is more than account balance.", HttpStatusCode.BadRequest);
             }
 
             account.Balance -= amount;
@@ -115,32 +116,24 @@ namespace BankingWebApi.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}/Reactivate")]
-        public async Task<IActionResult> ReactivateAccount(Guid id)
+        [HttpPost("{id}/Transfer")]
+        public async Task<IActionResult> Transfer(AccountTransfer accountTransfer)
         {
-            var account = await _context.Accounts.FindAsync(id);
-
-            if (account == null || account.Active)
-            {
-                return BadRequest();
-            }
-
-            account.Active = true;
-            await TrySaveContext(account);
-
-            return NoContent();
-        }
-
-        [HttpPut("{id}/Transfer")]
-        public async Task<IActionResult> Transfer(Guid id, AccountTransfer accountTransfer)
-        {
-            var account = await _context.Accounts.FindAsync(id);
+            var account = await _context.Accounts.FindAsync(accountTransfer.TransferFromId);
             var accountToTransferTo = await _context.Accounts.FindAsync(accountTransfer.TransferToId);
 
 
-            if (account == null || accountToTransferTo == null || accountTransfer.Amount > account.Balance)
+            if (account == null)
             {
-                return BadRequest();
+                return ErrorResponse("Could not find transfer from account with provided GUID.", HttpStatusCode.BadRequest);
+            }
+            else if (accountToTransferTo == null)
+            {
+                return ErrorResponse("Could not find transfer to account with provided GUID.", HttpStatusCode.BadRequest);
+            }
+            else if (accountTransfer.Amount > account.Balance)
+            {
+                return ErrorResponse("Amount entered is more than account balance.", HttpStatusCode.BadRequest);
             }
 
             await Withdraw(account.Id, accountTransfer.Amount);
@@ -171,6 +164,26 @@ namespace BankingWebApi.Controllers
             return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
         }
 
+        [HttpPut("{id}/Reactivate")]
+        public async Task<IActionResult> ReactivateAccount(Guid id)
+        {
+            var account = await _context.Accounts.FindAsync(id);
+
+            if (account == null)
+            {
+                return ErrorResponse("Could not find account with provided GUID.", HttpStatusCode.BadRequest);
+            }
+            else if (account.Active)
+            {
+                return ErrorResponse("Account already active.", HttpStatusCode.BadRequest);
+            }
+
+            account.Active = true;
+            await TrySaveContext(account);
+
+            return NoContent();
+        }
+
         // DELETE: api/Accounts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccount(Guid id)
@@ -179,26 +192,24 @@ namespace BankingWebApi.Controllers
 
             if (account == null)
             {
-                return NotFound();
+                return ErrorResponse("Could not find account with provided GUID.", HttpStatusCode.BadRequest);
             }
-
-            if (account.Active == false)
+            else if (account.Active == false)
             {
-                return BadRequest();
+                return ErrorResponse("Account already inactive.", HttpStatusCode.BadRequest);
+            }
+            else if (account.Balance > 0)
+            {
+                return ErrorResponse("Account currently has a balance greater than 0, please withdraw first.", HttpStatusCode.BadRequest);
             }
 
-            // TODO: what if balance > 0?
+
 
             account.Active = false;
             account.UpdatedDate = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool AccountExists(Guid id)
-        {
-            return (_context.Accounts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         private async Task TrySaveContext(Account account)
@@ -212,6 +223,11 @@ namespace BankingWebApi.Controllers
             {
                 throw;
             }
+        }
+
+        private ObjectResult ErrorResponse(String message, HttpStatusCode statusCode)
+        {
+            return new ObjectResult(message) { StatusCode = (int)statusCode };
         }
     }
 }
