@@ -4,6 +4,18 @@
         <name>BankingWebApi</name>
     </assembly>
     <members>
+        <member name="T:BankingWebApi.Controllers.AccountsController">
+            <summary>
+            Controller for web api endpoints.
+            </summary>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.#ctor(BankingWebApi.Models.AccountsContext)">
+            <summary>
+            Accounts controller where context is a list of accounts and errors handls errors.
+            </summary>
+            <param name="context"></param>
+            <param name="errors"></param>
+        </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.GetAccounts">
             <summary>
             Gets all accounts.
@@ -87,7 +99,35 @@
             204 if successful, 400 if account is already active or if account balance is still greater than 0.
             </returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:BankingWebApi.Utils.ErrorResponse.Response(System.String,System.Net.HttpStatusCode)" -->
-        <!-- Badly formed XML comment ignored for member "M:BankingWebApi.Utils.ErrorResponse.NotFound(System.Net.HttpStatusCode)" -->
+        <member name="T:BankingWebApi.Models.AccountCreate">
+            <summary>
+            Shape of model for creating account endpoint.
+            </summary>
+        </member>
+        <member name="T:BankingWebApi.Models.AccountsContext">
+            <summary>
+            Stores accounts locally.
+            </summary>
+        </member>
+        <member name="T:BankingWebApi.Models.AccountTransfer">
+            <summary>
+            Shape of object for transferring money between accounts endpoint.
+            </summary>
+        </member>
+        <member name="T:BankingWebApi.Utils.AccountsContextUtils">
+            <summary>
+            Util class for saving accounts in a list.
+            </summary>
+        </member>
+        <member name="M:BankingWebApi.Utils.AccountsContextUtils.TrySaveContext(BankingWebApi.Models.AccountsContext,BankingWebApi.Models.Account)">
+            <summary>
+            Tries to save updated account in the AccountsContext.
+            </summary>
+            <param name="context"></param>
+            <param name="account"></param>
+            <returns>
+            Nothing.
+            </returns>
+        </member>
     </members>
 </doc>

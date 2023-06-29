@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 using BankingWebApi.Models;
 using BankingWebApi.Utils;
-using BankingWebApi.Interfaces;
 
 namespace BankingWebApi.Controllers;
 
@@ -15,17 +13,15 @@ namespace BankingWebApi.Controllers;
 public class AccountsController : ControllerBase
 {
     private readonly AccountsContext _context;
-    private readonly IErrorMessages _errors;
 
     /// <summary>
     /// Accounts controller where context is a list of accounts and errors handls errors.
     /// </summary>
     /// <param name="context"></param>
     /// <param name="errors"></param>
-    public AccountsController(AccountsContext context, IErrorMessages errors)
+    public AccountsController(AccountsContext context)
     {
         _context = context;
-        _errors = errors;
     }
 
     /// <summary>
@@ -54,7 +50,7 @@ public class AccountsController : ControllerBase
 
         if (account is null)
         {
-            return _errors.NotFound();
+            return NotFound("Could not find account with provided GUID.");
         }
 
         return account;
@@ -75,7 +71,7 @@ public class AccountsController : ControllerBase
 
         if (account is null)
         {
-            return _errors.NotFound(HttpStatusCode.BadRequest);
+            return NotFound("Could not find account with provided GUID.");
         }
 
         account.Name = name;
@@ -99,7 +95,7 @@ public class AccountsController : ControllerBase
 
         if (account is null)
         {
-            return _errors.NotFound(HttpStatusCode.BadRequest);
+            return NotFound("Could not find account with provided GUID.");
         }
 
         account.Balance += amount;
@@ -116,18 +112,18 @@ public class AccountsController : ControllerBase
     /// <returns>
     /// 204 status code if successful, 404 if account not found, or 400 if account balance is less than withdrawal amount.
     /// </returns>
-    [HttpPost("{id}/Withdraw")]
+    [HttpPost("{id}/Withdrawal")]
     public async Task<IActionResult> Withdraw(Guid id, decimal amount)
     {
         var account = await _context.Accounts.FindAsync(id);
 
         if (account is null)
         {
-            return _errors.NotFound(HttpStatusCode.BadRequest);
+            return NotFound("Could not find account with provided GUID.");
         }
         else if (amount > account.Balance)
         {
-            return _errors.Response("Amount entered is more than account balance.", HttpStatusCode.BadRequest);
+            return BadRequest("Amount entered is more than account balance.");
         }
 
         account.Balance -= amount;
@@ -143,7 +139,7 @@ public class AccountsController : ControllerBase
     /// <returns>
     /// Returns 204 if successful, 400 if any account does not exist OR if account transfer amount is more than what exists from withdrawal account.
     /// </returns>
-    [HttpPost("Transfer")]
+    [HttpPost("Transfers")]
     public async Task<IActionResult> Transfer(AccountTransfer accountTransfer)
     {
         var account = await _context.Accounts.FindAsync(accountTransfer.TransferFromId);
@@ -151,15 +147,15 @@ public class AccountsController : ControllerBase
 
         if (account is null)
         {
-            return _errors.Response("Could not find transfer from account with provided GUID.", HttpStatusCode.BadRequest);
+            return NotFound("Could not find transfer from account with provided GUID.");
         }
         else if (accountToTransferTo is null)
         {
-            return _errors.Response("Could not find transfer to account with provided GUID.", HttpStatusCode.BadRequest);
+            return NotFound("Could not find transfer to account with provided GUID.");
         }
         else if (accountTransfer.Amount > account.Balance)
         {
-            return _errors.Response("Amount entered is more than account balance.", HttpStatusCode.BadRequest);
+            return BadRequest("Amount entered is more than account balance.");
         }
 
         await Withdraw(account.Id, accountTransfer.Amount);
@@ -203,18 +199,18 @@ public class AccountsController : ControllerBase
     /// <returns>
     /// 204 if successful, 400 if account is not found.
     /// </returns>
-    [HttpPut("{id}/Reactivate")]
+    [HttpPut("{id}/Activation")]
     public async Task<IActionResult> ReactivateAccount(Guid id)
     {
         var account = await _context.Accounts.FindAsync(id);
 
         if (account is null)
         {
-            return _errors.NotFound(HttpStatusCode.BadRequest);
+            return NotFound("Could not find account with provided GUID.");
         }
         else if (account.Active)
         {
-            return _errors.Response("Account already active.", HttpStatusCode.BadRequest);
+            return BadRequest("Account already active.");
         }
 
         account.Active = true;
@@ -237,15 +233,15 @@ public class AccountsController : ControllerBase
 
         if (account is null)
         {
-            return _errors.NotFound(HttpStatusCode.BadRequest);
+            return NotFound("Could not find account with provided GUID.");
         }
         else if (account.Active == false)
         {
-            return _errors.Response("Account already inactive.", HttpStatusCode.BadRequest);
+            return BadRequest("Account already inactive.");
         }
         else if (account.Balance > 0)
         {
-            return _errors.Response("Account currently has a balance greater than 0, please withdraw first.", HttpStatusCode.BadRequest);
+            return BadRequest("Account currently has a balance greater than 0, please withdraw first.");
         }
 
         account.Active = false;
