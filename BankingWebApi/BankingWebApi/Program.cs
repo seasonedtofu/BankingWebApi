@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BankingWebApi.Models;
-using BankingWebApi.Interfaces;
-using BankingWebApi.Utils;
-using System.Reflection;
+using BankingWebApi.Clients;
+using System.Drawing.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<AccountsContext>(opt => opt.UseInMemoryDatabase("Account"));
+builder.Services.AddHttpClient<CurrencyClient>(
+    client => client.BaseAddress = new Uri("https://api.freecurrencyapi.com/v1/latest?apikey="));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

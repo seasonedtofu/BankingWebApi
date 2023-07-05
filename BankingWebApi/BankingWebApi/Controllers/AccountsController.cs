@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using BankingWebApi.Models;
 using BankingWebApi.Utils;
+using BankingWebApi.Clients;
 
 namespace BankingWebApi.Controllers;
 
@@ -13,15 +14,17 @@ namespace BankingWebApi.Controllers;
 public class AccountsController : ControllerBase
 {
     private readonly AccountsContext _context;
+    private readonly CurrencyClient _currencyClient;
 
     /// <summary>
     /// Accounts controller where context is a list of accounts and errors handls errors.
     /// </summary>
     /// <param name="context"></param>
     /// <param name="errors"></param>
-    public AccountsController(AccountsContext context)
+    public AccountsController(AccountsContext context, CurrencyClient currencyClient)
     {
         _context = context;
+        _currencyClient = currencyClient;
     }
 
     /// <summary>
@@ -54,6 +57,28 @@ public class AccountsController : ControllerBase
         }
 
         return account;
+    }
+
+    /// <summary>
+    /// Gets currency converison.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="currency"></param>
+    /// <returns>
+    /// Returns USD exchanged to user desired currency.
+    /// </returns>
+    [HttpGet("{id}/Currency/Balance")]
+    public async Task<ActionResult<Object>> GetCurrencyConversion(Guid id, string currency)
+    {
+        var account = await _context.Accounts.FindAsync(id);
+
+        if (account is null)
+        {
+            return NotFound("Could not find account with provided GUID.");
+        }
+
+        var response = await _currencyClient.GetCurrencyRate(currency);
+        return Convert.ToDecimal(response) * account.Balance;
     }
 
     /// <summary>

@@ -9,7 +9,7 @@
             Controller for web api endpoints.
             </summary>
         </member>
-        <member name="M:BankingWebApi.Controllers.AccountsController.#ctor(BankingWebApi.Models.AccountsContext)">
+        <member name="M:BankingWebApi.Controllers.AccountsController.#ctor(BankingWebApi.Models.AccountsContext,BankingWebApi.Clients.CurrencyClient)">
             <summary>
             Accounts controller where context is a list of accounts and errors handls errors.
             </summary>
@@ -31,6 +31,16 @@
             <param name="id"></param>
             <returns>
             Account if found or 404 if not found.
+            </returns>
+        </member>
+        <member name="M:BankingWebApi.Controllers.AccountsController.GetCurrencyConversion(System.Guid,System.String)">
+            <summary>
+            Gets currency converison.
+            </summary>
+            <param name="id"></param>
+            <param name="currency"></param>
+            <returns>
+            Returns USD exchanged to user desired currency.
             </returns>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.ChangeName(System.Guid,System.String)">
