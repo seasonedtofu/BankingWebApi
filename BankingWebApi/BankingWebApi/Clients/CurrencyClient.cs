@@ -12,13 +12,16 @@ namespace BankingWebApi.Clients
             _httpClient = httpClient;
         }
 
-        public async Task<Object?> GetCurrencyRate(string currency)
+        public async Task<Dictionary<string, double>> GetCurrencyRate(string currency)
         {
             var response = await _httpClient!.GetAsync(
                 $"{_httpClient.BaseAddress}{_freeCurrencyApiKey}&currencies={currency}&base_currency=USD");
+
+            response.EnsureSuccessStatusCode();
+
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(jsonResponse);
-            return result?["data"][currency];
+            var result = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, double>>>(jsonResponse);
+            return result?["data"];
         }
     }
 }

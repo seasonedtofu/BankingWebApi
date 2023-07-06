@@ -38,7 +38,7 @@
             Gets currency converison.
             </summary>
             <param name="id"></param>
-            <param name="currency"></param>
+            <param name="currency">Enter currency abbreviations separated by a comma.</param>
             <returns>
             Returns USD exchanged to user desired currency.
             </returns>

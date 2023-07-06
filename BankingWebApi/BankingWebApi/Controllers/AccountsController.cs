@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BankingWebApi.Models;
 using BankingWebApi.Utils;
 using BankingWebApi.Clients;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace BankingWebApi.Controllers;
 
@@ -63,12 +65,12 @@ public class AccountsController : ControllerBase
     /// Gets currency converison.
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="currency"></param>
+    /// <param name="currency">Enter currency abbreviations separated by a comma.</param>
     /// <returns>
     /// Returns USD exchanged to user desired currency.
     /// </returns>
     [HttpGet("{id}/Currency/Balance")]
-    public async Task<ActionResult<Object>> GetCurrencyConversion(Guid id, string currency)
+    public async Task<ActionResult<object>> GetCurrencyConversion(Guid id, string currency)
     {
         var account = await _context.Accounts.FindAsync(id);
 
@@ -77,8 +79,14 @@ public class AccountsController : ControllerBase
             return NotFound("Could not find account with provided GUID.");
         }
 
-        var response = await _currencyClient.GetCurrencyRate(currency);
-        return Convert.ToDecimal(response) * account.Balance;
+        var response = await _currencyClient.GetCurrencyRate(currency.ToUpper());
+
+        foreach (var key in response.Keys)
+        {
+            response[key] *= Convert.ToDouble(account.Balance);
+        }
+
+        return response;
     }
 
     /// <summary>
