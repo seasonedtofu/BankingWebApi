@@ -17,16 +17,19 @@ public class AccountsController : ControllerBase
 {
     private readonly AccountsContext _context;
     private readonly CurrencyClient _currencyClient;
+    private readonly IConfiguration _configuration;
 
     /// <summary>
     /// Accounts controller where context is a list of accounts and errors handls errors.
     /// </summary>
     /// <param name="context"></param>
-    /// <param name="errors"></param>
-    public AccountsController(AccountsContext context, CurrencyClient currencyClient)
+    /// <param name="currencyClient"></param>
+    /// <param name="configuration"></param>
+    public AccountsController(AccountsContext context, CurrencyClient currencyClient, IConfiguration configuration)
     {
         _context = context;
         _currencyClient = currencyClient;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -79,7 +82,8 @@ public class AccountsController : ControllerBase
             return NotFound("Could not find account with provided GUID.");
         }
 
-        var response = await _currencyClient.GetCurrencyRate(currency.ToUpper());
+        var apiKey = _configuration.GetValue<string>("CURRENCY_API_KEY");
+        var response = await _currencyClient.GetCurrencyRate(currency.ToUpper(), apiKey);
 
         foreach (var key in response.Keys)
         {

@@ -9,12 +9,13 @@
             Controller for web api endpoints.
             </summary>
         </member>
-        <member name="M:BankingWebApi.Controllers.AccountsController.#ctor(BankingWebApi.Models.AccountsContext,BankingWebApi.Clients.CurrencyClient)">
+        <member name="M:BankingWebApi.Controllers.AccountsController.#ctor(BankingWebApi.Models.AccountsContext,BankingWebApi.Clients.CurrencyClient,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Accounts controller where context is a list of accounts and errors handls errors.
             </summary>
             <param name="context"></param>
-            <param name="errors"></param>
+            <param name="currencyClient"></param>
+            <param name="configuration"></param>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.GetAccounts">
             <summary>
