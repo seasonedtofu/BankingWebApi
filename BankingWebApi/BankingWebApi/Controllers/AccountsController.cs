@@ -22,9 +22,9 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Accounts controller where context is a list of accounts and errors handls errors.
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="currencyClient"></param>
-    /// <param name="configuration"></param>
+    /// <param name="context">Dependency injection for local db.</param>
+    /// <param name="currencyClient">Dependency injection for currency client for API calls.</param>
+    /// <param name="configuration">Dependency injection for appsettings.json to get API key.</param>
     public AccountsController(AccountsContext context, CurrencyClient currencyClient, IConfiguration configuration)
     {
         _context = context;
@@ -47,7 +47,7 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Gets account by id.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">GUID of account you want to view.</param>
     /// <returns>
     /// Account if found or 404 if not found.
     /// </returns>
@@ -67,8 +67,8 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Gets currency converison.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="currency">Enter currency abbreviations separated by a comma.</param>
+    /// <param name="id">GUID of account you want to view.</param>
+    /// <param name="currency">Enter currency abbreviations you want to convert to from USD separated by a comma.</param>
     /// <returns>
     /// Returns USD exchanged to user desired currency.
     /// </returns>
@@ -96,8 +96,8 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Changes name property of account.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="name"></param>
+    /// <param name="id">GUID of account you want to apply name change to.</param>
+    /// <param name="name">Name(string) you want to change to for account.</param>
     /// <returns>
     /// 204 if account name successfully changes or 404 if account not found.
     /// </returns>
@@ -120,8 +120,8 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Deposits money into an account balance.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="amount"></param>
+    /// <param name="id">GUID of account you want to apply deposit to.</param>
+    /// <param name="amount">Decimal amount of money you want to add to acount.</param>
     /// <returns>
     /// 204 status code if successful, 404 if account not found.
     /// </returns>
@@ -144,8 +144,8 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Withdraws money from account balance.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="amount"></param>
+    /// <param name="id">GUID of account you want to apply withdrawal to.</param>
+    /// <param name="amount">Decimal amount of money you want to withdraw from account.</param>
     /// <returns>
     /// 204 status code if successful, 404 if account not found, or 400 if account balance is less than withdrawal amount.
     /// </returns>
@@ -172,7 +172,12 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Transfers a provided amount from one user's account to another users's account.
     /// </summary>
-    /// <param name="accountTransfer"></param>
+    /// <param name="accountTransfer">
+    /// Account transfer model, contains properties of:
+    /// TransferFromId: GUID (account you want to transfer from)
+    /// TransferToId: GUID (account you want to transfer to)
+    /// Amount: Decimal amount of money you want to transfer.
+    /// </param>
     /// <returns>
     /// Returns 204 if successful, 400 if any account does not exist OR if account transfer amount is more than what exists from withdrawal account.
     /// </returns>
@@ -205,7 +210,11 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Creates an account.
     /// </summary>
-    /// <param name="accountCreate"></param>
+    /// <param name="accountCreate">
+    /// Model for creating account, contains:
+    /// Name: Name(string) of account holder.
+    /// Balance: Decimal amount of initial deposit of money.
+    /// </param>
     /// <returns>
     /// If successful, returns account object.
     /// </returns>
@@ -232,7 +241,7 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Reactivates a deactivated account.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">GUID of account you want to reactivate.</param>
     /// <returns>
     /// 204 if successful, 400 if account is not found.
     /// </returns>
@@ -259,7 +268,7 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Soft deletes an account.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">GUID of account you want to deactivate</param>
     /// <returns>
     /// 204 if successful, 400 if account is already active or if account balance is still greater than 0.
     /// </returns>
