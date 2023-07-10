@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BankingWebApi.Models;
-using BankingWebApi.Utils;
 using BankingWebApi.Clients;
 using BankingWebApi.Interfaces;
 
