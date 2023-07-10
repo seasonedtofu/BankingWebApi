@@ -134,20 +134,5 @@
             Shape of object for transferring money between accounts endpoint.
             </summary>
         </member>
-        <member name="T:BankingWebApi.Utils.AccountsContextUtils">
-            <summary>
-            Util class for saving accounts in a list.
-            </summary>
-        </member>
-        <member name="M:BankingWebApi.Utils.AccountsContextUtils.TrySaveContext(BankingWebApi.Models.AccountsContext,BankingWebApi.Models.Account)">
-            <summary>
-            Tries to save updated account in the AccountsContext.
-            </summary>
-            <param name="context"></param>
-            <param name="account"></param>
-            <returns>
-            Nothing.
-            </returns>
-        </member>
     </members>
 </doc>
