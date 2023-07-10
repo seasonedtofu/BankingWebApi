@@ -4,7 +4,7 @@ namespace BankingWebApi.Clients
 {
     public class CurrencyClient
     {
-        private HttpClient? _httpClient;
+        private readonly HttpClient _httpClient;
 
         public CurrencyClient(HttpClient httpClient)
         {

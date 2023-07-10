@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BankingWebApi.Models;
 using BankingWebApi.Utils;
 using BankingWebApi.Clients;
-using System.Net;
-using System.Text.RegularExpressions;
+using BankingWebApi.Interfaces;
 
 namespace BankingWebApi.Controllers;
 
@@ -15,21 +13,21 @@ namespace BankingWebApi.Controllers;
 [ApiController]
 public class AccountsController : ControllerBase
 {
-    private readonly AccountsContext _context;
     private readonly CurrencyClient _currencyClient;
     private readonly IConfiguration _configuration;
+    private readonly IAccountRepository _accountRepository;
 
     /// <summary>
     /// Accounts controller where context is a list of accounts and errors handls errors.
     /// </summary>
-    /// <param name="context">Dependency injection for local db.</param>
     /// <param name="currencyClient">Dependency injection for currency client for API calls.</param>
     /// <param name="configuration">Dependency injection for appsettings.json to get API key.</param>
-    public AccountsController(AccountsContext context, CurrencyClient currencyClient, IConfiguration configuration)
+    /// <param name="accountRepository">Dependency injection for account repository.</param>
+    public AccountsController(CurrencyClient currencyClient, IConfiguration configuration, IAccountRepository accountRepository)
     {
-        _context = context;
         _currencyClient = currencyClient;
         _configuration = configuration;
+        _accountRepository = accountRepository;
     }
 
     /// <summary>
@@ -39,9 +37,9 @@ public class AccountsController : ControllerBase
     /// List of all accounts or empty list if no accounts found.
     /// </returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
+    public async Task<IEnumerable<Account>> GetAccounts()
     {
-        return await _context.Accounts.ToListAsync();
+        return await _accountRepository.GetAccounts();
     }
 
     /// <summary>
@@ -54,11 +52,15 @@ public class AccountsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Account>> GetAccount(Guid id)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _accountRepository.GetAccount(id);
 
-        if (account is null)
+        if (account == null)
         {
             return NotFound("Could not find account with provided GUID.");
+        }
+        else if (account.Active is false)
+        {
+            return BadRequest("Account is not active.");
         }
 
         return account;
@@ -75,11 +77,15 @@ public class AccountsController : ControllerBase
     [HttpGet("{id}/Currency/Balance")]
     public async Task<ActionResult<object>> GetCurrencyConversion(Guid id, string currency)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _accountRepository.GetAccount(id);
 
         if (account is null)
         {
             return NotFound("Could not find account with provided GUID.");
+        }
+        else if (account.Active is false)
+        {
+            return BadRequest("Account is not active.");
         }
 
         var apiKey = _configuration.GetValue<string>("CURRENCY_API_KEY");
@@ -104,15 +110,16 @@ public class AccountsController : ControllerBase
     [HttpPut("{id}/Name")]
     public async Task<IActionResult> ChangeName(Guid id, string name)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _accountRepository.ChangeName(id, name);
 
         if (account is null)
         {
             return NotFound("Could not find account with provided GUID.");
         }
-
-        account.Name = name;
-        await AccountsContextUtils.TrySaveContext(_context, account);
+        else if (account.Active is false)
+        {
+            return BadRequest("Account is not active.");
+        }
 
         return NoContent();
     }
@@ -128,15 +135,18 @@ public class AccountsController : ControllerBase
     [HttpPost("{id}/Deposit")]
     public async Task<IActionResult> Deposit(Guid id, decimal amount)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _accountRepository.GetAccount(id);
 
         if (account is null)
         {
             return NotFound("Could not find account with provided GUID.");
         }
+        else if (account.Active is false)
+        {
+            return BadRequest("Account is not active.");
+        }
 
-        account.Balance += amount;
-        await AccountsContextUtils.TrySaveContext(_context, account);
+        _accountRepository.Deposit(id, amount);
 
         return NoContent();
     }
@@ -152,7 +162,7 @@ public class AccountsController : ControllerBase
     [HttpPost("{id}/Withdrawal")]
     public async Task<IActionResult> Withdraw(Guid id, decimal amount)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _accountRepository.GetAccount(id);
 
         if (account is null)
         {
@@ -163,8 +173,7 @@ public class AccountsController : ControllerBase
             return BadRequest("Amount entered is more than account balance.");
         }
 
-        account.Balance -= amount;
-        await AccountsContextUtils.TrySaveContext(_context, account);
+        _accountRepository.Withdraw(id, amount);
 
         return NoContent();
     }
@@ -184,8 +193,8 @@ public class AccountsController : ControllerBase
     [HttpPost("Transfers")]
     public async Task<IActionResult> Transfer(AccountTransfer accountTransfer)
     {
-        var account = await _context.Accounts.FindAsync(accountTransfer.TransferFromId);
-        var accountToTransferTo = await _context.Accounts.FindAsync(accountTransfer.TransferToId);
+        var account = await _accountRepository.GetAccount(accountTransfer.TransferFromId);
+        var accountToTransferTo = await _accountRepository.GetAccount(accountTransfer.TransferToId);
 
         if (account is null)
         {
@@ -200,9 +209,7 @@ public class AccountsController : ControllerBase
             return BadRequest("Amount entered is more than account balance.");
         }
 
-        await Withdraw(account.Id, accountTransfer.Amount);
-        await Deposit(accountToTransferTo.Id, accountTransfer.Amount);
-        await AccountsContextUtils.TrySaveContext(_context, account);
+        _accountRepository.Transfer(accountTransfer);
 
         return NoContent();
     }
@@ -221,23 +228,10 @@ public class AccountsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<AccountCreate>> PostAccount(AccountCreate accountCreate)
     {
-        var dateTime = DateTime.UtcNow;
-        var account = new Account
-        {
-            Id = Guid.NewGuid(),
-            Name = accountCreate.Name,
-            Balance = accountCreate.Balance,
-            Active = true,
-            CreatedDate = dateTime,
-            UpdatedDate = dateTime,
-        };
-
-        _context.Accounts.Add(account);
-        await _context.SaveChangesAsync();
-
+        var account = await _accountRepository.CreateAccount(accountCreate);
         return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
     }
-
+    
     /// <summary>
     /// Reactivates a deactivated account.
     /// </summary>
@@ -248,7 +242,7 @@ public class AccountsController : ControllerBase
     [HttpPut("{id}/Activation")]
     public async Task<IActionResult> ReactivateAccount(Guid id)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _accountRepository.GetAccount(id);
 
         if (account is null)
         {
@@ -259,9 +253,7 @@ public class AccountsController : ControllerBase
             return BadRequest("Account already active.");
         }
 
-        account.Active = true;
-        await AccountsContextUtils.TrySaveContext(_context, account);
-
+        _accountRepository.ReactivateAccount(id);
         return NoContent();
     }
 
@@ -275,13 +267,13 @@ public class AccountsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAccount(Guid id)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _accountRepository.GetAccount(id);
 
         if (account is null)
         {
             return NotFound("Could not find account with provided GUID.");
         }
-        else if (account.Active == false)
+        else if (account.Active is false)
         {
             return BadRequest("Account already inactive.");
         }
@@ -290,10 +282,7 @@ public class AccountsController : ControllerBase
             return BadRequest("Account currently has a balance greater than 0, please withdraw first.");
         }
 
-        account.Active = false;
-        account.UpdatedDate = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
-
+        _accountRepository.DeleteAccount(id);
         return NoContent();
     }
 }
