@@ -2,7 +2,7 @@
 
 namespace BankingWebApi.Models;
 
-public class Account: IAccount
+public class Account: Entity, IAccount
 {
     public Guid Id { get; init; }
     public string? Name { get; set; }
