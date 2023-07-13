@@ -2,109 +2,115 @@
 using BankingWebApi.Interfaces;
 using BankingWebApi.Models;
 
-namespace BankingWebApi.Repositories
+namespace BankingWebApi.Repositories;
 
+public class AccountRepository : IAccountRepository
 {
-    public class AccountRepository : IAccountRepository
+    private readonly AccountsContext _context;
+
+    private bool AccountExistsAndActive(Account account)
     {
-        private readonly AccountsContext _context;
+        return !(account is null) && account.Active is true;
+    }
 
-        private bool AccountExistsAndActive(Account account)
+    public AccountRepository(AccountsContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Account>> GetAccounts()
+    {
+        return await _context.Accounts.ToListAsync();
+    }
+
+    public async Task<Account> GetAccount(Guid id)
+    {
+        return await _context.Accounts.FindAsync(id);
+    }
+
+    public async Task<Account> ChangeName(Guid id, string name)
+    {
+        var account = await GetAccount(id);
+
+        if (AccountExistsAndActive(account))
         {
-            return !(account is null) && account.Active is true;
-        }
-        public AccountRepository(AccountsContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<IEnumerable<Account>> GetAccounts()
-        {
-            return await _context.Accounts.ToListAsync();
-        }
-
-        public async Task<Account> GetAccount(Guid id)
-        {
-            return await _context.Accounts.FindAsync(id);
-        }
-
-        public async Task<Account> ChangeName(Guid id, string name)
-        {
-            var account = await GetAccount(id);
-
-            if (AccountExistsAndActive(account))
-            {
-                account.Name = name;
-            }
-
-            return account;
+            account.Name = name;
+            await _context.SaveChangesAsync();
         }
 
-        public async void Deposit(Guid id, decimal amount)
-        {
-            var account = await GetAccount(id);
+        return account;
+    }
 
-            if (AccountExistsAndActive(account))
-            {
-                account.Balance += amount;
-            }
+    public async void Deposit(Guid id, decimal amount)
+    {
+        var account = await GetAccount(id);
+
+        if (AccountExistsAndActive(account))
+        {
+            account.Balance += amount;
+            await _context.SaveChangesAsync();
         }
+    }
 
-        public async void Withdraw(Guid id, decimal amount)
+    public async void Withdraw(Guid id, decimal amount)
+    {
+        var account = await GetAccount(id);
+
+        if (AccountExistsAndActive(account) && account.Balance > amount)
         {
-            var account = await GetAccount(id);
-
-            if (AccountExistsAndActive(account) && account.Balance > amount)
-            {
-                account.Balance -= amount;
-            }
+            account.Balance -= amount;
+            await _context.SaveChangesAsync();
         }
+    }
 
-        public async void Transfer(AccountTransfer accountTransfer)
+    public async void Transfer(AccountTransfer accountTransfer)
+    {
+        var account = await GetAccount(accountTransfer.TransferFromId);
+
+        if (AccountExistsAndActive(account) && account.Balance > accountTransfer.Amount)
         {
-            var account = await GetAccount(accountTransfer.TransferFromId);
-
-            if (AccountExistsAndActive(account) && account.Balance > accountTransfer.Amount)
-            {
-                Withdraw(accountTransfer.TransferFromId, accountTransfer.Amount);
-                Deposit(accountTransfer.TransferToId, accountTransfer.Amount);
-            }
+            Withdraw(accountTransfer.TransferFromId, accountTransfer.Amount);
+            Deposit(accountTransfer.TransferToId, accountTransfer.Amount);
+            await _context.SaveChangesAsync();
         }
+    }
 
-        public async Task<Account> CreateAccount(AccountCreate accountCreate)
+    public async Task<Account> CreateAccount(AccountCreate accountCreate)
+    {
+        var dateTime = DateTime.UtcNow;
+        var account = new Account
         {
-            var dateTime = DateTime.UtcNow;
-            var account = new Account
-            {
-                Id = Guid.NewGuid(),
-                Name = accountCreate.Name,
-                Balance = accountCreate.Balance,
-                Active = true,
-                CreatedDate = dateTime,
-                UpdatedDate = dateTime,
-            };
+            Id = Guid.NewGuid(),
+            Name = accountCreate.Name,
+            Balance = accountCreate.Balance,
+            Active = true,
+            CreatedDate = dateTime,
+            UpdatedDate = dateTime,
+        };
 
-            _context.Accounts.Add(account);
-            return account;
+        _context.Accounts.Add(account);
+        await _context.SaveChangesAsync();
+        return account;
+    }
+
+    public async void ReactivateAccount(Guid id)
+    {
+        var account = await GetAccount(id);
+        if (account.Active is false)
+        {
+            account.Active = true;
+            await _context.SaveChangesAsync();
         }
+    }
 
-        public async void ReactivateAccount(Guid id)
+    public async void DeleteAccount(Guid id)
+    {
+        var account = await GetAccount(id);
+        if (account.Active is true)
         {
-            var account = await GetAccount(id);
-            if (account.Active is false)
-            {
-                account.Active = true;
-            }
-        }
-
-        public async void DeleteAccount(Guid id)
-        {
-            var account = await GetAccount(id);
-            if (account.Active is true)
-            {
-                account.Active = false;
-                account.UpdatedDate = DateTime.UtcNow;
-            }
+            account.Active = false;
+            account.UpdatedDate = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
         }
     }
 }

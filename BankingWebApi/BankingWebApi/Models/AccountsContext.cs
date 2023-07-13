@@ -5,7 +5,7 @@ namespace BankingWebApi.Models;
 /// <summary>
 /// Stores accounts locally.
 /// </summary>
-public class AccountsContext: DbContext
+public class AccountsContext : DbContext
 {
     public AccountsContext(DbContextOptions<AccountsContext> options)
         : base(options)
@@ -14,6 +14,18 @@ public class AccountsContext: DbContext
     }
 
     public DbSet<Account> Accounts { get; set; } = null!;
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return base.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw;
+        }
+    }
 
     private void AccountsContext_SavingChanges(object? sender, SavingChangesEventArgs e)
     {

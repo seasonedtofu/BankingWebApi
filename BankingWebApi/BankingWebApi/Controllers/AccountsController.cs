@@ -53,7 +53,7 @@ public class AccountsController : ControllerBase
     {
         var account = await _accountRepository.GetAccount(id);
 
-        if (account == null)
+        if (account is null)
         {
             return NotFound("Could not find account with provided GUID.");
         }
@@ -109,7 +109,7 @@ public class AccountsController : ControllerBase
     [HttpPut("{id}/Name")]
     public async Task<IActionResult> ChangeName(Guid id, string name)
     {
-        var account = await _accountRepository.ChangeName(id, name);
+        var account = await _accountRepository.GetAccount(id);
 
         if (account is null)
         {
