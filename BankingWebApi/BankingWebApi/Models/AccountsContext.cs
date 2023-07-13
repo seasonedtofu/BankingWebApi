@@ -36,21 +36,22 @@ public class AccountsContext : DbContext
             EntityState.Deleted,
         };
 
-        foreach (var changedEntity in ChangeTracker.Entries())
+        foreach (var changedEntity in ChangeTracker
+                    .Entries()
+                    .Where(e => e.Entity is Entity && (entityStates.Contains(e.State)))
+                )
         {
-            if (changedEntity.Entity is Entity entity && entityStates.Contains(changedEntity.State))
+            var entity = (Entity)changedEntity.Entity;
+            switch (changedEntity.State)
             {
-                switch (changedEntity.State)
-                {
-                    case EntityState.Added:
-                        entity.CreatedDate = DateTime.UtcNow;
-                        entity.UpdatedDate = DateTime.UtcNow;
-                        break;
-                    case EntityState.Modified:
-                    case EntityState.Deleted:
-                        entity.UpdatedDate = DateTime.UtcNow;
-                        break;
-                }
+                case EntityState.Added:
+                    entity.CreatedDate = DateTime.UtcNow;
+                    entity.UpdatedDate = DateTime.UtcNow;
+                    break;
+                case EntityState.Modified:
+                case EntityState.Deleted:
+                    entity.UpdatedDate = DateTime.UtcNow;
+                    break;
             }
         }
     }

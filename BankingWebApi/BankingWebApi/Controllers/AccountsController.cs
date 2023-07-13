@@ -120,6 +120,7 @@ public class AccountsController : ControllerBase
             return BadRequest("Account is not active.");
         }
 
+        await _accountRepository.ChangeName(id, name);
         return NoContent();
     }
 
@@ -146,7 +147,6 @@ public class AccountsController : ControllerBase
         }
 
         _accountRepository.Deposit(id, amount);
-
         return NoContent();
     }
 
@@ -173,7 +173,6 @@ public class AccountsController : ControllerBase
         }
 
         _accountRepository.Withdraw(id, amount);
-
         return NoContent();
     }
 
@@ -209,7 +208,6 @@ public class AccountsController : ControllerBase
         }
 
         _accountRepository.Transfer(accountTransfer);
-
         return NoContent();
     }
 

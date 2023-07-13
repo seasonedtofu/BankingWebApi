@@ -109,7 +109,7 @@ public class AccountRepository : IAccountRepository
         if (account.Active is true)
         {
             account.Active = false;
-            account.UpdatedDate = DateTime.UtcNow;
+            //account.UpdatedDate = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
     }
