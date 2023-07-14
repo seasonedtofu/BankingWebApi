@@ -5,7 +5,7 @@ namespace BankingWebApi.Interfaces
 {
     public interface IAccountRepository
     {
-        Task<IEnumerable<Account>> GetAccounts();
+        Task<IEnumerable<Account>> GetAccounts(AccountsFilter filters);
         Task<Account> GetAccount(Guid id);
         Task<Account> ChangeName(Guid id, string name);
         void Deposit(Guid id, decimal amount);

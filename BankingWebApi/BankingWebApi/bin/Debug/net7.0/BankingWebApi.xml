@@ -17,7 +17,7 @@
             <param name="configuration">Dependency injection for appsettings.json to get API key.</param>
             <param name="accountRepository">Dependency injection for account repository.</param>
         </member>
-        <member name="M:BankingWebApi.Controllers.AccountsController.GetAccounts">
+        <member name="M:BankingWebApi.Controllers.AccountsController.GetAccounts(BankingWebApi.Models.AccountsFilter)">
             <summary>
             Gets all accounts.
             </summary>

@@ -36,9 +36,9 @@ public class AccountsController : ControllerBase
     /// List of all accounts or empty list if no accounts found.
     /// </returns>
     [HttpGet]
-    public async Task<IEnumerable<Account>> GetAccounts()
+    public async Task<IEnumerable<Account>> GetAccounts([FromQuery] AccountsFilter filters)
     {
-        return await _accountRepository.GetAccounts();
+        return await _accountRepository.GetAccounts(filters);
     }
 
     /// <summary>

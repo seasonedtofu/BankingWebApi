@@ -18,9 +18,39 @@ public class AccountRepository : IAccountRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Account>> GetAccounts()
+    public async Task<IEnumerable<Account>> GetAccounts(AccountsFilter filters)
     {
-        return await _context.Accounts.ToListAsync();
+        var pageSize = filters.PageSize;
+        var active = filters.Active;
+        var sortBy = typeof(Account).GetProperty(filters.SortBy);
+        Console.WriteLine(sortBy);
+        var sortOrder = filters.SortOrder;
+
+        var filtered = await _context.Accounts
+            .Where(account =>
+                account.Name.Contains(filters.SearchTerm)
+                && (active != null ? active == account.Active : true))
+            .ToListAsync();
+
+        var properties = typeof(Account).GetProperties();
+        foreach (var property in properties) { Console.WriteLine(property); }
+
+        if (properties.Contains(sortBy))
+        {
+            Console.WriteLine("contains soryby");
+            if (string.Equals(sortOrder, "desc", StringComparison.CurrentCultureIgnoreCase))
+            {
+                filtered = filtered.OrderByDescending(account => (sortBy.GetValue(account) ?? string.Empty).ToString()).ToList();
+            }
+            else
+            {
+                filtered = filtered.OrderBy(account => (sortBy.GetValue(account) ?? string.Empty).ToString()).ToList();
+            }
+        }
+
+        return filtered
+            .Skip(pageSize * (filters.PageNumber - 1))
+            .Take(pageSize);
     }
 
     public async Task<Account> GetAccount(Guid id)
@@ -84,8 +114,8 @@ public class AccountRepository : IAccountRepository
             Name = accountCreate.Name,
             Balance = accountCreate.Balance,
             Active = true,
-            CreatedDate = dateTime,
-            UpdatedDate = dateTime,
+            //CreatedDate = null,
+            //UpdatedDate = null,
         };
 
         _context.Accounts.Add(account);

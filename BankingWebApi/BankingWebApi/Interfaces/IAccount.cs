@@ -6,6 +6,4 @@ public interface IAccount
     string? Name { get; set; }
     decimal Balance { get; set; }
     bool Active { get; set; }
-    DateTime CreatedDate { get; init; }
-    DateTime UpdatedDate { get; set; }
 }
