@@ -40,13 +40,18 @@ public class AccountRepository : IAccountRepository
             Console.WriteLine("contains soryby");
             if (string.Equals(sortOrder, "desc", StringComparison.CurrentCultureIgnoreCase))
             {
-                filtered = filtered.OrderByDescending(account => (sortBy.GetValue(account) ?? string.Empty).ToString()).ToList();
+                filtered = filtered.OrderByDescending(account => (sortBy.GetValue(account) ?? "CreatedBy").ToString()).ToList();
             }
             else
             {
-                filtered = filtered.OrderBy(account => (sortBy.GetValue(account) ?? string.Empty).ToString()).ToList();
+                filtered = filtered.OrderBy(account => (sortBy.GetValue(account) ?? "CreatedBy").ToString()).ToList();
             }
         }
+        else
+        {
+            filtered = filtered.OrderBy(account => "CreatedBy").ToList();
+        }
+
 
         return filtered
             .Skip(pageSize * (filters.PageNumber - 1))
