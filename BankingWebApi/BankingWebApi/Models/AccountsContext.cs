@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BankingWebApi.Interfaces;
 
 namespace BankingWebApi.Models;
 

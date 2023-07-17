@@ -11,7 +11,7 @@
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.#ctor(BankingWebApi.Clients.CurrencyClient,Microsoft.Extensions.Configuration.IConfiguration,BankingWebApi.Interfaces.IAccountRepository)">
             <summary>
-            Accounts controller where context is a list of accounts and errors handls errors.
+            Accounts controller.
             </summary>
             <param name="currencyClient">Dependency injection for currency client for API calls.</param>
             <param name="configuration">Dependency injection for appsettings.json to get API key.</param>
@@ -24,6 +24,8 @@
             <returns>
             List of all accounts or empty list if no accounts found.
             </returns>
+            <response code="200">Returns accounts that match the provided filters.</response>
+            <response code="400">Returns bad request if wrong properties provided.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.GetAccount(System.Guid)">
             <summary>
@@ -31,8 +33,10 @@
             </summary>
             <param name="id">GUID of account you want to view.</param>
             <returns>
-            Account if found or 404 if not found.
+            Account if found.
             </returns>
+            <response code="200">Returns account that match the provided id.</response>
+            <response code="404">Returns not found if no account found with provided id.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.GetCurrencyConversion(System.Guid,System.String)">
             <summary>
@@ -43,6 +47,9 @@
             <returns>
             Returns USD exchanged to user desired currency.
             </returns>
+            <response code="200">Returns balance in requested currencies that match the provided account id.</response>
+            <response code="400">Returns bad request if account is inactive.</response>
+            <response code="404">Returns not found if no account found with provided id.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.ChangeName(System.Guid,System.String)">
             <summary>
@@ -53,6 +60,9 @@
             <returns>
             204 if account name successfully changes or 404 if account not found.
             </returns>
+            <response code="200">Returns 200 OK if name changed successfully.</response>
+            <response code="400">Returns bad request if account is inactive.</response>
+            <response code="404">Returns not found if no account found with provided id.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.Deposit(System.Guid,System.Decimal)">
             <summary>
@@ -63,6 +73,9 @@
             <returns>
             204 status code if successful, 404 if account not found.
             </returns>
+            <response code="200">Returns 200 OK if deposit was successful.</response>
+            <response code="400">Returns bad request if account is inactive.</response>
+            <response code="404">Returns not found if no account found with provided id.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.Withdraw(System.Guid,System.Decimal)">
             <summary>
@@ -71,8 +84,11 @@
             <param name="id">GUID of account you want to apply withdrawal to.</param>
             <param name="amount">Decimal amount of money you want to withdraw from account.</param>
             <returns>
-            204 status code if successful, 404 if account not found, or 400 if account balance is less than withdrawal amount.
+            Returns 200 if withdrawal is successful.
             </returns>
+            <response code="200">Returns 200 OK if withdrawal was successful.</response>
+            <response code="400">Returns bad request if account is not active or balance is less than withdrawal amount.</response>
+            <response code="404">Returns not found if no account found with provided id.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.Transfer(BankingWebApi.Models.AccountTransfer)">
             <summary>
@@ -85,8 +101,11 @@
             Amount: Decimal amount of money you want to transfer.
             </param>
             <returns>
-            Returns 204 if successful, 400 if any account does not exist OR if account transfer amount is more than what exists from withdrawal account.
+            Returns 200 if transfer successful.
             </returns>
+            <response code="200">Returns 200 OK if transfer was successfull.</response>
+            <response code="400">Returns bad request if any account is inactive or transfer amount is more than transfer from account balance.</response>
+            <response code="404">Returns not found if any account not found with provided id.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.PostAccount(BankingWebApi.Models.AccountCreate)">
             <summary>
@@ -100,6 +119,7 @@
             <returns>
             If successful, returns account object.
             </returns>
+            <response code="200">Returns account that was created.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.ReactivateAccount(System.Guid)">
             <summary>
@@ -109,6 +129,9 @@
             <returns>
             204 if successful, 400 if account is not found.
             </returns>
+            <response code="200">Returns 200 OK if reactivation was successfull.</response>
+            <response code="400">Returns bad request if account is still active.</response>
+            <response code="404">Returns not found if account not found with provided id.</response>
         </member>
         <member name="M:BankingWebApi.Controllers.AccountsController.DeleteAccount(System.Guid)">
             <summary>
@@ -118,6 +141,9 @@
             <returns>
             204 if successful, 400 if account is already active or if account balance is still greater than 0.
             </returns>
+            <response code="200">Returns 200 OK if deactivation was successfull.</response>
+            <response code="400">Returns bad request if account is already inactive or there is a current balance greater than 0.</response>
+            <response code="404">Returns not found if account not found with provided id.</response>
         </member>
         <member name="T:BankingWebApi.Models.AccountCreate">
             <summary>
@@ -129,9 +155,36 @@
             Stores accounts locally.
             </summary>
         </member>
+        <member name="P:BankingWebApi.Models.AccountsFilter.Active">
+            <summary>
+            If account is active or not
+            </summary>
+        </member>
         <member name="T:BankingWebApi.Models.AccountTransfer">
             <summary>
             Shape of object for transferring money between accounts endpoint.
+            </summary>
+        </member>
+        <member name="P:BankingWebApi.Models.BaseFilter.SortOrder">
+            <summary>
+            Sort order, accepts the following:
+            
+            Asc
+            
+            Desc
+            </summary>
+        </member>
+        <member name="P:BankingWebApi.Models.BaseFilter.SortBy">
+            <summary>
+            Sort by, accepts the following:
+            
+            CreatedDate
+            
+            UpdatedDate
+            
+            Name
+            
+            Balance
             </summary>
         </member>
     </members>

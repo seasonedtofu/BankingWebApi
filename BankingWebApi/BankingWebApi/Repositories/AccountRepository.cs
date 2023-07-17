@@ -18,27 +18,25 @@ public class AccountRepository : IAccountRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Account>> GetAccounts(AccountsFilter filters)
+    public async Task<(IEnumerable<Account>, PaginationMetadata)> GetAccounts(AccountsFilter filters)
     {
         var pageSize = filters.PageSize;
         var active = filters.Active;
         var sortBy = typeof(Account).GetProperty(filters.SortBy);
-        Console.WriteLine(sortBy);
         var sortOrder = filters.SortOrder;
 
         var filtered = await _context.Accounts
             .Where(account =>
-                account.Name.Contains(filters.SearchTerm)
+                account.Name.Contains(filters.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
                 && (active != null ? active == account.Active : true))
             .ToListAsync();
 
         var properties = typeof(Account).GetProperties();
-        foreach (var property in properties) { Console.WriteLine(property); }
+
 
         if (properties.Contains(sortBy))
         {
-            Console.WriteLine("contains soryby");
-            if (string.Equals(sortOrder, "desc", StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(sortOrder, "Asc", StringComparison.CurrentCultureIgnoreCase))
             {
                 filtered = filtered.OrderByDescending(account => (sortBy.GetValue(account) ?? "CreatedBy").ToString()).ToList();
             }
@@ -52,10 +50,13 @@ public class AccountRepository : IAccountRepository
             filtered = filtered.OrderBy(account => "CreatedBy").ToList();
         }
 
+        var paginationMetadata = new PaginationMetadata(filtered.Count(), pageSize, filters.PageNumber);
 
-        return filtered
+        var accounts = filtered
             .Skip(pageSize * (filters.PageNumber - 1))
             .Take(pageSize);
+
+        return (accounts, paginationMetadata);
     }
 
     public async Task<Account> GetAccount(Guid id)
