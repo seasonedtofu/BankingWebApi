@@ -10,7 +10,15 @@ public class AccountRepository : IAccountRepository
 
     private bool AccountExistsAndActive(Account account)
     {
-        return !(account is null) && account.Active is true;
+        if (account is null)
+        {
+            throw new InvalidOperationException("Account does not exist.");
+        }
+        else if (account.Active is false)
+        {
+            throw new InvalidOperationException("Account is inactive.");
+        }
+        return true;
     }
 
     public AccountRepository(AccountsContext context)
@@ -61,10 +69,17 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Account> GetAccount(Guid id)
     {
-        return await _context.Accounts.FindAsync(id);
+        var account = await _context.Accounts.FindAsync(id);
+
+        if (account is null)
+        {
+            throw new InvalidOperationException("Account does not exist.");
+        }
+
+        return account;
     }
 
-    public async Task<Account> ChangeName(Guid id, string name)
+    public async Task ChangeName(Guid id, string name)
     {
         var account = await GetAccount(id);
 
@@ -73,13 +88,16 @@ public class AccountRepository : IAccountRepository
             account.Name = name;
             await _context.SaveChangesAsync();
         }
-
-        return account;
     }
 
-    public async void Deposit(Guid id, decimal amount)
+    public async Task Deposit(Guid id, decimal amount)
     {
         var account = await GetAccount(id);
+
+        if (amount < 0)
+        {
+            throw new ArgumentOutOfRangeException("Cannot deposit a negative amount.");
+        }
 
         if (AccountExistsAndActive(account))
         {
@@ -88,25 +106,35 @@ public class AccountRepository : IAccountRepository
         }
     }
 
-    public async void Withdraw(Guid id, decimal amount)
+    public async Task Withdraw(Guid id, decimal amount)
     {
         var account = await GetAccount(id);
 
-        if (AccountExistsAndActive(account) && account.Balance > amount)
+        if (amount < 0)
         {
+            throw new ArgumentOutOfRangeException("Cannot withdraw a negative amount.");
+        }
+
+        if (AccountExistsAndActive(account))
+        {
+            if (amount > account.Balance)
+            {
+                throw new InvalidOperationException("Requested withdrawal amount is more than account balance.");
+            }
             account.Balance -= amount;
             await _context.SaveChangesAsync();
         }
     }
 
-    public async void Transfer(AccountTransfer accountTransfer)
+    public async Task Transfer(AccountTransfer accountTransfer)
     {
-        var account = await GetAccount(accountTransfer.TransferFromId);
+        var accountFrom = await GetAccount(accountTransfer.TransferFromId);
+        var accountTo = await GetAccount(accountTransfer.TransferToId);
 
-        if (AccountExistsAndActive(account) && account.Balance > accountTransfer.Amount)
+        if (AccountExistsAndActive(accountFrom) && AccountExistsAndActive(accountTo))
         {
-            Withdraw(accountTransfer.TransferFromId, accountTransfer.Amount);
-            Deposit(accountTransfer.TransferToId, accountTransfer.Amount);
+            await Withdraw(accountTransfer.TransferFromId, accountTransfer.Amount);
+            await Deposit(accountTransfer.TransferToId, accountTransfer.Amount);
             await _context.SaveChangesAsync();
         }
     }
@@ -120,8 +148,6 @@ public class AccountRepository : IAccountRepository
             Name = accountCreate.Name,
             Balance = accountCreate.Balance,
             Active = true,
-            //CreatedDate = null,
-            //UpdatedDate = null,
         };
 
         _context.Accounts.Add(account);
@@ -129,24 +155,29 @@ public class AccountRepository : IAccountRepository
         return account;
     }
 
-    public async void ReactivateAccount(Guid id)
-    {
-        var account = await GetAccount(id);
-        if (account.Active is false)
-        {
-            account.Active = true;
-            await _context.SaveChangesAsync();
-        }
-    }
-
-    public async void DeleteAccount(Guid id)
+    public async Task ReactivateAccount(Guid id)
     {
         var account = await GetAccount(id);
         if (account.Active is true)
         {
-            account.Active = false;
-            //account.UpdatedDate = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+            throw new InvalidOperationException("Account is already active.");
         }
+        account.Active = true;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAccount(Guid id)
+    {
+        var account = await GetAccount(id);
+        if (account.Active is false)
+        {
+            throw new InvalidOperationException("Account is already deactivated.");
+        }
+        else if (account.Balance > 0)
+        {
+            throw new InvalidOperationException("Account still has a balance of greater than 0, please withdraw before deactivating account.");
+        }
+        account.Active = false;
+        await _context.SaveChangesAsync();
     }
 }

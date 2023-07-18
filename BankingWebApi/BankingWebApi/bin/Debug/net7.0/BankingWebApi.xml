@@ -145,6 +145,15 @@
             <response code="400">Returns bad request if account is already inactive or there is a current balance greater than 0.</response>
             <response code="404">Returns not found if account not found with provided id.</response>
         </member>
+        <member name="M:BankingWebApi.Controllers.AuthenticationController.CreateToken(BankingWebApi.Controllers.AuthenticationController.AuthenticationRequestBody)">
+            <summary>
+            Creates a token to be used to authenticate.
+            </summary>
+            <returns>
+            Returns an authentication token.
+            </returns>
+            <response code="200">Returns token.</response>
+        </member>
         <member name="T:BankingWebApi.Models.AccountCreate">
             <summary>
             Shape of model for creating account endpoint.

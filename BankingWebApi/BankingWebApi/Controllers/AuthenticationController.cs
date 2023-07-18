@@ -1,21 +1,86 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BankingWebApi.Controllers
 {
     [Route("api/authentication")]
     [ApiController]
-    public class AuthenticationController
+    public class AuthenticationController : ControllerBase
     {
-        public class AuthenticationRequestBody : ControllerBase
-        {
+        private IConfiguration _configuration;
 
+        public class AuthenticationRequestBody
+        {
+            public string? UserName { get; set; }
+            public string? Password { get; set; }
         }
 
-        [HttpPost("authenticate")]
-        public ActionResult<string> Authenticate(AuthenticationRequestBody authenticationRequestBody)
+        /// <summary>
+        /// Creates a token to be used to authenticate.
+        /// </summary>
+        /// <returns>
+        /// Returns an authentication token.
+        /// </returns>
+        /// <response code="200">Returns token.</response>
+        [HttpPost("CreateToken")]
+        public ActionResult<string> CreateToken(AuthenticationRequestBody authenticationRequestBody)
         {
-            //var user = ValidateUserCredentials();
-            return "test";
+            var user = ValidateUserCredentials(
+                authenticationRequestBody.UserName,
+                authenticationRequestBody.Password);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.ASCII.GetBytes(_configuration["Authentication:SecretForKey"]));
+            var signingCredentials = new SigningCredentials(
+                securityKey, SecurityAlgorithms.HmacSha256);
+            var claimsForToken = new List<Claim>();
+            claimsForToken.Add(new Claim("sub", user.UserId.ToString()));
+            claimsForToken.Add(new Claim("user_name", user.UserName.ToString()));
+
+            var jwtSecurityToken = new JwtSecurityToken(
+                _configuration["Authentication:Issuer"],
+                _configuration["Authentication:Audience"],
+                claimsForToken,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddHours(1),
+                signingCredentials);
+
+            var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+            return token;
+        }
+
+        public AuthenticationController(IConfiguration configuration)
+        {
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        }
+
+        private UserInfo ValidateUserCredentials(string? userName, string? password)
+        {
+            // FOR PROJECT PURPOSES ONLY WE ASSUME USER AND PW IS CORRECT AND DO NOT ACTUALLY VALIDATE
+            return new UserInfo(
+                Guid.NewGuid(),
+                userName ?? "");
+        }
+
+        private class UserInfo
+        {
+            public Guid UserId { get; set; }
+            public string UserName { get; set; }
+
+            public UserInfo(Guid userId, string userName)
+            {
+                UserId = userId;
+                UserName = userName;
+            }
         }
     }
 }

@@ -267,3 +267,4 @@ C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\System.Net.H
 C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll
 C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\CsvHelper.dll
 C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\Microsoft.AspNetCore.Mvc.Versioning.dll
+C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

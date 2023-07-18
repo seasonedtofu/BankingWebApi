@@ -3,6 +3,7 @@ using BankingWebApi.Models;
 using BankingWebApi.Clients;
 using BankingWebApi.Interfaces;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BankingWebApi.Controllers;
 
@@ -11,6 +12,7 @@ namespace BankingWebApi.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiVersion("1.0")]
+[Authorize]
 [ApiController]
 public class AccountsController : ControllerBase
 {
@@ -64,14 +66,19 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Account>> GetAccount(Guid id)
     {
-        var account = await _accountRepository.GetAccount(id);
-
-        if (account is null)
+        try
         {
-            return NotFound("Could not find account with provided GUID.");
+            var account = await _accountRepository.GetAccount(id);
+            return account;
         }
-
-        return account;
+        catch (InvalidOperationException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -91,26 +98,27 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<object>> GetCurrencyConversion(Guid id, string currency)
     {
-        var account = await _accountRepository.GetAccount(id);
-
-        if (account is null)
+        try
         {
-            return NotFound("Could not find account with provided GUID.");
+            var account = await _accountRepository.GetAccount(id);
+            var apiKey = _configuration.GetValue<string>("CURRENCY_API_KEY");
+            var response = await _currencyClient.GetCurrencyRate(currency.ToUpper(), apiKey);
+
+            foreach (var key in response.Keys)
+            {
+                response[key] *= Convert.ToDouble(account.Balance);
+            }
+
+            return response;
         }
-        else if (account.Active is false)
+        catch (InvalidOperationException e)
         {
-            return BadRequest("Account is not active.");
+            return NotFound(e.Message);
         }
-
-        var apiKey = _configuration.GetValue<string>("CURRENCY_API_KEY");
-        var response = await _currencyClient.GetCurrencyRate(currency.ToUpper(), apiKey);
-
-        foreach (var key in response.Keys)
+        catch (Exception e)
         {
-            response[key] *= Convert.ToDouble(account.Balance);
+            return BadRequest(e.Message);
         }
-
-        return response;
     }
 
     /// <summary>
@@ -130,19 +138,19 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ChangeName(Guid id, string name)
     {
-        var account = await _accountRepository.GetAccount(id);
-
-        if (account is null)
+        try
         {
-            return NotFound("Could not find account with provided GUID.");
+            await _accountRepository.ChangeName(id, name);
+            return NoContent();
         }
-        else if (account.Active is false)
+        catch (InvalidOperationException e)
         {
-            return BadRequest("Account is not active.");
+            return NotFound(e.Message);
         }
-
-        await _accountRepository.ChangeName(id, name);
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -162,19 +170,23 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Deposit(Guid id, decimal amount)
     {
-        var account = await _accountRepository.GetAccount(id);
-
-        if (account is null)
+        try
         {
-            return NotFound("Could not find account with provided GUID.");
+            await _accountRepository.Deposit(id, amount);
+            return NoContent();
         }
-        else if (account.Active is false)
+        catch (InvalidOperationException e)
         {
-            return BadRequest("Account is not active.");
+            return NotFound(e.Message);
         }
-
-        _accountRepository.Deposit(id, amount);
-        return NoContent();
+        catch (ArgumentOutOfRangeException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -194,23 +206,23 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Withdraw(Guid id, decimal amount)
     {
-        var account = await _accountRepository.GetAccount(id);
-
-        if (account is null)
+        try
         {
-            return NotFound("Could not find account with provided GUID.");
+            await _accountRepository.Withdraw(id, amount);
+            return NoContent();
         }
-        else if (account.Active is false)
+        catch (InvalidOperationException e)
         {
-            return BadRequest("Account is not active.");
+            return NotFound(e.Message);
         }
-        else if (amount > account.Balance)
+        catch (ArgumentOutOfRangeException e)
         {
-            return BadRequest("Amount entered is more than account balance.");
+            return BadRequest(e.Message);
         }
-
-        _accountRepository.Withdraw(id, amount);
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -234,32 +246,23 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Transfer(AccountTransfer accountTransfer)
     {
-        var account = await _accountRepository.GetAccount(accountTransfer.TransferFromId);
-        var accountToTransferTo = await _accountRepository.GetAccount(accountTransfer.TransferToId);
-
-        if (account is null)
+        try
         {
-            return NotFound("Could not find transfer from account with provided GUID.");
+            await _accountRepository.Transfer(accountTransfer);
+            return NoContent();
         }
-        else if (account.Active is false)
+        catch (InvalidOperationException e)
         {
-            return BadRequest("Transfer from account is not active.");
+            return NotFound(e.Message);
         }
-        else if (accountToTransferTo is null)
+        catch (ArgumentOutOfRangeException e)
         {
-            return NotFound("Could not find transfer to account with provided GUID.");
+            return BadRequest(e.Message);
         }
-        else if (accountToTransferTo.Active is false)
+        catch (Exception e)
         {
-            return BadRequest("Transfer to account is not active.");
+            return BadRequest(e.Message);
         }
-        else if (accountTransfer.Amount > account.Balance)
-        {
-            return BadRequest("Amount entered is more than account balance.");
-        }
-
-        _accountRepository.Transfer(accountTransfer);
-        return NoContent();
     }
 
     /// <summary>
@@ -298,19 +301,19 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ReactivateAccount(Guid id)
     {
-        var account = await _accountRepository.GetAccount(id);
-
-        if (account is null)
+        try
         {
-            return NotFound("Could not find account with provided GUID.");
+            await _accountRepository.ReactivateAccount(id);
+            return NoContent();
         }
-        else if (account.Active)
+        catch (InvalidOperationException e)
         {
-            return BadRequest("Account already active.");
+            return NotFound(e.Message);
         }
-
-        _accountRepository.ReactivateAccount(id);
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     /// <summary>
@@ -329,22 +332,18 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAccount(Guid id)
     {
-        var account = await _accountRepository.GetAccount(id);
-
-        if (account is null)
+        try
         {
-            return NotFound("Could not find account with provided GUID.");
+            await _accountRepository.DeleteAccount(id);
+            return NoContent();
         }
-        else if (account.Active is false)
+        catch (InvalidOperationException e)
         {
-            return BadRequest("Account already inactive.");
+            return NotFound(e.Message);
         }
-        else if (account.Balance > 0)
+        catch (Exception e)
         {
-            return BadRequest("Account currently has a balance greater than 0, please withdraw first.");
+            return BadRequest(e.Message);
         }
-
-        _accountRepository.DeleteAccount(id);
-        return NoContent();
     }
 }

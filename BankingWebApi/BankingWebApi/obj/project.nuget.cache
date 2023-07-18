@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "xrFwvViVUTmWjkQCUFNGzRu5SJmg1q8WQWSlZ9bzhedhrwX6poFzj00vNNQkulwW3rQ2ule3/IrKs1Wg/3iPEg==",
+  "dgSpecHash": "Zrid1APG6aEyb9eHkPHOtIq1FZ9Z6fdh8bCBYTXv8jqMz/9CT1Ofaw4DYsnHI/10YnhTVyvPnNjJSKVpHABn2g==",
   "success": true,
   "projectFilePath": "C:\\Repos\\BankingWebApi\\BankingWebApi\\BankingWebApi\\BankingWebApi.csproj",
   "expectedPackageFiles": [
@@ -59,6 +59,7 @@
     "C:\\Users\\azhu\\.nuget\\packages\\humanizer.core.zh-hans\\2.14.1\\humanizer.core.zh-hans.2.14.1.nupkg.sha512",
     "C:\\Users\\azhu\\.nuget\\packages\\humanizer.core.zh-hant\\2.14.1\\humanizer.core.zh-hant.2.14.1.nupkg.sha512",
     "C:\\Users\\azhu\\.nuget\\packages\\microsoft.aspnet.webapi.client\\5.2.9\\microsoft.aspnet.webapi.client.5.2.9.nupkg.sha512",
+    "C:\\Users\\azhu\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.9\\microsoft.aspnetcore.authentication.jwtbearer.7.0.9.nupkg.sha512",
     "C:\\Users\\azhu\\.nuget\\packages\\microsoft.aspnetcore.mvc.versioning\\5.1.0\\microsoft.aspnetcore.mvc.versioning.5.1.0.nupkg.sha512",
     "C:\\Users\\azhu\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.7\\microsoft.aspnetcore.openapi.7.0.7.nupkg.sha512",
     "C:\\Users\\azhu\\.nuget\\packages\\microsoft.aspnetcore.razor.language\\6.0.11\\microsoft.aspnetcore.razor.language.6.0.11.nupkg.sha512",
