@@ -12,10 +12,12 @@ namespace BankingWebApi.Controllers
     {
         private IConfiguration _configuration;
 
-        public class AuthenticationRequestBody
+        public record AuthenticationRequestBody(string? UserName, string? Password);
+        private record UserInfo(Guid UserId, string UserName);
+
+        public AuthenticationController(IConfiguration configuration)
         {
-            public string? UserName { get; set; }
-            public string? Password { get; set; }
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <summary>
@@ -58,29 +60,10 @@ namespace BankingWebApi.Controllers
             return token;
         }
 
-        public AuthenticationController(IConfiguration configuration)
-        {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        }
-
         private UserInfo ValidateUserCredentials(string? userName, string? password)
         {
             // FOR PROJECT PURPOSES ONLY WE ASSUME USER AND PW IS CORRECT AND DO NOT ACTUALLY VALIDATE
-            return new UserInfo(
-                Guid.NewGuid(),
-                userName ?? "");
-        }
-
-        private class UserInfo
-        {
-            public Guid UserId { get; set; }
-            public string UserName { get; set; }
-
-            public UserInfo(Guid userId, string userName)
-            {
-                UserId = userId;
-                UserName = userName;
-            }
+            return new UserInfo(Guid.NewGuid(), userName ?? "");
         }
     }
 }
