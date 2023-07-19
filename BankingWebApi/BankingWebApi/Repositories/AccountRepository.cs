@@ -3,10 +3,21 @@ using BankingWebApi.Interfaces;
 using BankingWebApi.Models;
 
 namespace BankingWebApi.Repositories;
-
 public class AccountRepository : IAccountRepository
 {
     private readonly AccountsContext _context;
+    private enum _sortBy
+    {
+        CreatedDate,
+        UpdatedDate,
+        Name,
+        Balance
+    }
+    private enum _sortOrder
+    {
+        Asc,
+        Desc
+    }
 
     private bool AccountExistsAndActive(Account account)
     {
@@ -44,18 +55,18 @@ public class AccountRepository : IAccountRepository
 
         if (properties.Contains(sortBy))
         {
-            if (string.Equals(sortOrder, "Asc", StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(sortOrder, nameof(_sortOrder.Asc), StringComparison.CurrentCultureIgnoreCase))
             {
-                filtered = filtered.OrderByDescending(account => (sortBy.GetValue(account) ?? "CreatedBy").ToString()).ToList();
+                filtered = filtered.OrderByDescending(account => (sortBy.GetValue(account) ?? nameof(_sortBy.CreatedDate)).ToString()).ToList();
             }
             else
             {
-                filtered = filtered.OrderBy(account => (sortBy.GetValue(account) ?? "CreatedBy").ToString()).ToList();
+                filtered = filtered.OrderBy(account => (sortBy.GetValue(account) ?? nameof(_sortBy.CreatedDate)).ToString()).ToList();
             }
         }
         else
         {
-            filtered = filtered.OrderBy(account => "CreatedBy").ToList();
+            filtered = filtered.OrderBy(account => nameof(_sortBy.CreatedDate)).ToList();
         }
 
         var paginationMetadata = new PaginationMetadata(filtered.Count(), pageSize, filters.PageNumber);

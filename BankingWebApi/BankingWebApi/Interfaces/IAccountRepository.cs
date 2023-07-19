@@ -1,7 +1,6 @@
 ﻿using BankingWebApi.Models;
 
 namespace BankingWebApi.Interfaces
-
 {
     public interface IAccountRepository
     {

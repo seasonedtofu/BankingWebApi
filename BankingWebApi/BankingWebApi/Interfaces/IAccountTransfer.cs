@@ -1,5 +1,4 @@
 ﻿namespace BankingWebApi.Interfaces;
-
 public interface IAccountTransfer
 {
     Guid TransferFromId { get; set; }

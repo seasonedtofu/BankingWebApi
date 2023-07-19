@@ -6,7 +6,6 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BankingWebApi.Controllers;
-
 /// <summary>
 /// Controller for web api endpoints.
 /// </summary>

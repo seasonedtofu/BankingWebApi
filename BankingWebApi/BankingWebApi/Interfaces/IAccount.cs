@@ -1,5 +1,4 @@
 ﻿namespace BankingWebApi.Interfaces;
-
 public interface IAccount
 {
     Guid Id { get; init; }

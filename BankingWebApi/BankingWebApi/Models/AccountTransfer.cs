@@ -1,7 +1,6 @@
 ﻿using BankingWebApi.Interfaces;
 
 namespace BankingWebApi.Models;
-
 /// <summary>
 /// Shape of object for transferring money between accounts endpoint.
 /// </summary>

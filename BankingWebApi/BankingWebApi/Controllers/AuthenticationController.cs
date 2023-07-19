@@ -1,8 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using BankingWebApi.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace BankingWebApi.Controllers
 {
@@ -10,14 +8,15 @@ namespace BankingWebApi.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private IConfiguration _configuration;
+        private readonly AuthenticationRepository _authenticationRepository;
 
-        public record AuthenticationRequestBody(string? UserName, string? Password);
-        private record UserInfo(Guid UserId, string UserName);
-
-        public AuthenticationController(IConfiguration configuration)
+        /// <summary>
+        /// Authentication controller.
+        /// </summary>
+        /// <param name="authenticationRepository">Dependency injection for authenticatio repository</param>
+        public AuthenticationController(AuthenticationRepository authenticationRepository)
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _authenticationRepository = authenticationRepository;
         }
 
         /// <summary>
@@ -28,42 +27,21 @@ namespace BankingWebApi.Controllers
         /// </returns>
         /// <response code="200">Returns token.</response>
         [HttpPost("CreateToken")]
-        public ActionResult<string> CreateToken(AuthenticationRequestBody authenticationRequestBody)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public Task<ActionResult<string>> CreateToken(AuthenticationRepository.AuthenticationRequestBody authenticationRequestBody)
         {
-            var user = ValidateUserCredentials(
-                authenticationRequestBody.UserName,
-                authenticationRequestBody.Password);
-
-            if (user == null)
+            try
             {
-                return Unauthorized();
+                return Task.FromResult<ActionResult<string>>(_authenticationRepository.CreateToken(authenticationRequestBody));
             }
-
-            var securityKey = new SymmetricSecurityKey(
-                Encoding.ASCII.GetBytes(_configuration["Authentication:SecretForKey"]));
-            var signingCredentials = new SigningCredentials(
-                securityKey, SecurityAlgorithms.HmacSha256);
-            var claimsForToken = new List<Claim>();
-            claimsForToken.Add(new Claim("sub", user.UserId.ToString()));
-            claimsForToken.Add(new Claim("user_name", user.UserName.ToString()));
-
-            var jwtSecurityToken = new JwtSecurityToken(
-                _configuration["Authentication:Issuer"],
-                _configuration["Authentication:Audience"],
-                claimsForToken,
-                DateTime.UtcNow,
-                DateTime.UtcNow.AddHours(1),
-                signingCredentials);
-
-            var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-
-            return token;
-        }
-
-        private UserInfo ValidateUserCredentials(string? userName, string? password)
-        {
-            // FOR PROJECT PURPOSES ONLY WE ASSUME USER AND PW IS CORRECT AND DO NOT ACTUALLY VALIDATE
-            return new UserInfo(Guid.NewGuid(), userName ?? "");
+            catch (UnauthorizedAccessException e)
+            {
+                return Task.FromResult<ActionResult<string>>(Unauthorized(e.Message));
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult<ActionResult<string>>(BadRequest(e.Message));
+            }
         }
     }
 }

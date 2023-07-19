@@ -1,7 +1,6 @@
 ﻿using BankingWebApi.Interfaces;
 
 namespace BankingWebApi.Models;
-
 /// <summary>
 /// Shape of model for creating account endpoint.
 /// </summary>

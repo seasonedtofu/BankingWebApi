@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 namespace BankingWebApi.Models;
-
 /// <summary>
 /// Stores accounts locally.
 /// </summary>
