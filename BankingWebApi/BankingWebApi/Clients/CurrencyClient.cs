@@ -20,7 +20,14 @@ namespace BankingWebApi.Clients
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, double>>>(jsonResponse);
-            return result.GetValueOrDefault("data");
+            var currencyRates = result.GetValueOrDefault("data");
+
+            if (currencyRates == null)
+            {
+                throw new Exception("Error: Currency api returned null.");
+            }
+
+            return currencyRates;
         }
     }
 }
