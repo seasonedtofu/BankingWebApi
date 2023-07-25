@@ -1,5 +1,5 @@
 ﻿using BankingWebApi.Repositories;
-namespace BankingWebApi.Records;
+using BankingWebApi.Records;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankingWebApi.Controllers
