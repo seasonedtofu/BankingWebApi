@@ -1,6 +1,6 @@
 ﻿using BankingWebApi.Repositories;
+namespace BankingWebApi.Records;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace BankingWebApi.Controllers
 {
@@ -28,7 +28,7 @@ namespace BankingWebApi.Controllers
         /// <response code="200">Returns token.</response>
         [HttpPost("CreateToken")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public Task<ActionResult<string>> CreateToken(AuthenticationRepository.AuthenticationRequestBody authenticationRequestBody)
+        public Task<ActionResult<string>> CreateToken(AuthenticationRequestBody authenticationRequestBody)
         {
             try
             {

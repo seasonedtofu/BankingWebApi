@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using static BankingWebApi.Repositories.AuthenticationRepository;
+﻿using BankingWebApi.Records;
 
 namespace BankingWebApi.Interfaces
 {

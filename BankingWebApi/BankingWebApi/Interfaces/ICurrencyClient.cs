@@ -2,7 +2,6 @@
 {
     public interface ICurrencyClient
     {
-        void OpenCurrencyClient();
-        HttpResponse GetCurrencyRate();
+        Task<Dictionary<string, double>> GetCurrencyRate(string currency, string key);
     }
 }

@@ -23,7 +23,7 @@ builder.Services.AddDbContext<AccountsContext>(opt => opt.UseInMemoryDatabase("A
 builder.Services.AddHttpClient<CurrencyClient>(client => 
         client.BaseAddress = new Uri("https://api.freecurrencyapi.com/v1/latest?apikey="));
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IAuthenticationRespository, AuthenticationRepository>();
+builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>

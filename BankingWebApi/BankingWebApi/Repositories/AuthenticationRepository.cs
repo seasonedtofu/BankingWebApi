@@ -1,4 +1,5 @@
 ﻿using BankingWebApi.Interfaces;
+using BankingWebApi.Records;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,9 +10,6 @@ namespace BankingWebApi.Repositories
     public class AuthenticationRepository : IAuthenticationRepository
     {
         private IConfiguration _configuration;
-
-        private record UserInfo(Guid UserId, string UserName);
-        public record AuthenticationRequestBody(string? UserName, string? Password);
 
         public AuthenticationRepository(IConfiguration configuration)
         {

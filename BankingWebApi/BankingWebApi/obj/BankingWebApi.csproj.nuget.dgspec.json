@@ -10,11 +10,11 @@
         "projectUniqueName": "C:\\Repos\\BankingWebApi\\BankingWebApi\\BankingWebApi\\BankingWebApi.csproj",
         "projectName": "BankingWebApi",
         "projectPath": "C:\\Repos\\BankingWebApi\\BankingWebApi\\BankingWebApi\\BankingWebApi.csproj",
-        "packagesPath": "C:\\Users\\azhu\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\seaso\\.nuget\\packages\\",
         "outputPath": "C:\\Repos\\BankingWebApi\\BankingWebApi\\BankingWebApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\azhu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\seaso\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -107,7 +106,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
         }
       }
     }
