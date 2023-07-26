@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using BankingWebApi.Models;
 using BankingWebApi.Clients;
 using BankingWebApi.Repositories;
 using BankingWebApi.Interfaces;
@@ -8,9 +7,17 @@ using BankingWebApi.Formatters;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using BankingWebApi.Context;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var currencyKey = builder.Configuration.GetValue<string>("CURRENCY_API_KEY");
+
+// Database Context 
+
+//builder.Services.AddDbContext<AccountsContext>(opt => opt.UseInMemoryDatabase("Account"));
+builder.Services.AddDbContext<AccountsDbContext>(options => options
+    .UseSqlServer(builder.Configuration.GetConnectionString("AccountsDbContext")));
 
 // Add services to the container.
 
@@ -19,7 +26,6 @@ builder.Services.AddControllers(options =>
     options.RespectBrowserAcceptHeader = true;
     options.OutputFormatters.Add(new CsvOutputFormatter());
 }).AddXmlDataContractSerializerFormatters();
-builder.Services.AddDbContext<AccountsContext>(opt => opt.UseInMemoryDatabase("Account"));
 builder.Services.AddHttpClient<CurrencyClient>(client => 
         client.BaseAddress = new Uri("https://api.freecurrencyapi.com/v1/latest?apikey="));
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();

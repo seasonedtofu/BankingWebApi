@@ -4,6 +4,11 @@
         <name>BankingWebApi</name>
     </assembly>
     <members>
+        <member name="T:BankingWebApi.Context.AccountsContext">
+            <summary>
+            Stores accounts locally.
+            </summary>
+        </member>
         <member name="T:BankingWebApi.Controllers.AccountsController">
             <summary>
             Controller for web api endpoints.
@@ -166,11 +171,6 @@
         <member name="T:BankingWebApi.Models.AccountCreate">
             <summary>
             Shape of model for creating account endpoint.
-            </summary>
-        </member>
-        <member name="T:BankingWebApi.Models.AccountsContext">
-            <summary>
-            Stores accounts locally.
             </summary>
         </member>
         <member name="P:BankingWebApi.Models.AccountsFilter.Active">

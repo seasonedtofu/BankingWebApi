@@ -1,7 +1,7 @@
 ﻿using BankingWebApi.Interfaces;
 using BankingWebApi.Models;
 using BankingWebApi.Extensions;
-using Microsoft.EntityFrameworkCore;
+using BankingWebApi.Context;
 
 namespace BankingWebApi.Repositories;
 public class AccountRepository : IAccountRepository
@@ -47,11 +47,13 @@ public class AccountRepository : IAccountRepository
 
         var accounts = await _context.Accounts
             .Where(account =>
-                account.Name.Contains(filters.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
-                && (active != null ? active == account.Active : true))
-            .OrderBy(sortBy.GetValue, sortOrder == "Asc" ? true : false)
+                //account.Name.Contains(filters.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
+                account.Name.ToLower() == filters.SearchTerm.ToLower()
+                && (active != null ? active == account.Active : true)) 
+            .OrderByDynamic(account => sortBy.GetValue(account), sortOrder == "Asc" ? true : false)
             .Skip(pageSize * (filters.PageNumber - 1))
             .Take(pageSize)
+            .ToAsyncEnumerable()
             .ToListAsync();
 
         var paginationMetadata = new PaginationMetadata(accounts.Count(), pageSize, filters.PageNumber);
@@ -133,7 +135,6 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Account> CreateAccount(AccountCreate accountCreate)
     {
-        var dateTime = DateTime.UtcNow;
         var account = new Account
         {
             Id = Guid.NewGuid(),
