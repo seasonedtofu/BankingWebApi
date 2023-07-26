@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using BankingWebApi.Interfaces;
+﻿using BankingWebApi.Interfaces;
 using BankingWebApi.Models;
+using BankingWebApi.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankingWebApi.Repositories;
 public class AccountRepository : IAccountRepository
@@ -44,36 +45,16 @@ public class AccountRepository : IAccountRepository
         var sortBy = typeof(Account).GetProperty(filters.SortBy);
         var sortOrder = filters.SortOrder;
 
-        var filtered = await _context.Accounts
+        var accounts = await _context.Accounts
             .Where(account =>
                 account.Name.Contains(filters.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
                 && (active != null ? active == account.Active : true))
+            .OrderBy(sortBy.GetValue, sortOrder == "Asc" ? true : false)
+            .Skip(pageSize * (filters.PageNumber - 1))
+            .Take(pageSize)
             .ToListAsync();
 
-        var properties = typeof(Account).GetProperties();
-
-
-        if (properties.Contains(sortBy))
-        {
-            if (string.Equals(sortOrder, nameof(_sortOrder.Asc), StringComparison.CurrentCultureIgnoreCase))
-            {
-                filtered = filtered.OrderByDescending(account => (sortBy.GetValue(account) ?? nameof(_sortBy.CreatedDate)).ToString()).ToList();
-            }
-            else
-            {
-                filtered = filtered.OrderBy(account => (sortBy.GetValue(account) ?? nameof(_sortBy.CreatedDate)).ToString()).ToList();
-            }
-        }
-        else
-        {
-            filtered = filtered.OrderBy(account => nameof(_sortBy.CreatedDate)).ToList();
-        }
-
-        var paginationMetadata = new PaginationMetadata(filtered.Count(), pageSize, filters.PageNumber);
-
-        var accounts = filtered
-            .Skip(pageSize * (filters.PageNumber - 1))
-            .Take(pageSize);
+        var paginationMetadata = new PaginationMetadata(accounts.Count(), pageSize, filters.PageNumber);
 
         return (accounts, paginationMetadata);
     }

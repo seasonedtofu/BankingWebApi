@@ -35,6 +35,9 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Gets all accounts.
     /// </summary>
+    /// <param name="filters">
+    /// Parameters for filtering/sorting/ordering.
+    /// </param>
     /// <returns>
     /// List of all accounts or empty list if no accounts found.
     /// </returns>
@@ -43,12 +46,12 @@ public class AccountsController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<(IEnumerable<Account>, PaginationMetadata)> GetAccounts(AccountsFilter filters)
+    public async Task<IEnumerable<Account>> GetAccounts([FromQuery] AccountsFilter filters)
     {
         var (accounts, paginationMetadata) = await _accountRepository.GetAccounts(filters);
         Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
-        return (accounts, paginationMetadata);
+        return accounts;
     }
 
     /// <summary>

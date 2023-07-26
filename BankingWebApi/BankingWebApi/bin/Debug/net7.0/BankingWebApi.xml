@@ -21,6 +21,9 @@
             <summary>
             Gets all accounts.
             </summary>
+            <param name="filters">
+            Parameters for filtering/sorting/ordering.
+            </param>
             <returns>
             List of all accounts or empty list if no accounts found.
             </returns>
@@ -145,11 +148,11 @@
             <response code="400">Returns bad request if account is already inactive or there is a current balance greater than 0.</response>
             <response code="404">Returns not found if account not found with provided id.</response>
         </member>
-        <member name="M:BankingWebApi.Controllers.AuthenticationController.#ctor(BankingWebApi.Repositories.AuthenticationRepository)">
+        <member name="M:BankingWebApi.Controllers.AuthenticationController.#ctor(BankingWebApi.Interfaces.IAuthenticationRepository)">
             <summary>
             Authentication controller.
             </summary>
-            <param name="authenticationRepository">Dependency injection for authenticatio repository</param>
+            <param name="authenticationRepository">Dependency injection for authentication repository</param>
         </member>
         <member name="M:BankingWebApi.Controllers.AuthenticationController.CreateToken(BankingWebApi.Records.AuthenticationRequestBody)">
             <summary>

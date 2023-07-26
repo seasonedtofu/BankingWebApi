@@ -1,4 +1,5 @@
-﻿using BankingWebApi.Repositories;
+﻿using BankingWebApi.Interfaces;
+using BankingWebApi.Repositories;
 using BankingWebApi.Records;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,10 @@ namespace BankingWebApi.Controllers
         /// <summary>
         /// Authentication controller.
         /// </summary>
-        /// <param name="authenticationRepository">Dependency injection for authenticatio repository</param>
-        public AuthenticationController(AuthenticationRepository authenticationRepository)
+        /// <param name="authenticationRepository">Dependency injection for authentication repository</param>
+        public AuthenticationController(IAuthenticationRepository authenticationRepository)
         {
-            _authenticationRepository = authenticationRepository;
+            _authenticationRepository = (AuthenticationRepository?)authenticationRepository;
         }
 
         /// <summary>
