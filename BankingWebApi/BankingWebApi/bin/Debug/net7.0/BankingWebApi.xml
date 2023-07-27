@@ -4,11 +4,6 @@
         <name>BankingWebApi</name>
     </assembly>
     <members>
-        <member name="T:BankingWebApi.Context.AccountsContext">
-            <summary>
-            Stores accounts locally.
-            </summary>
-        </member>
         <member name="T:BankingWebApi.Controllers.AccountsController">
             <summary>
             Controller for web api endpoints.
@@ -167,6 +162,54 @@
             Returns an authentication token.
             </returns>
             <response code="200">Returns token.</response>
+        </member>
+        <member name="T:BankingWebApi.Migrations.AddDocker">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.AddDocker.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.AddDocker.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.AddDocker.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:BankingWebApi.Migrations.TestSqlServer">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.TestSqlServer.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.TestSqlServer.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.TestSqlServer.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:BankingWebApi.Migrations.WindowsToLinuxDocker">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.WindowsToLinuxDocker.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.WindowsToLinuxDocker.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.WindowsToLinuxDocker.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:BankingWebApi.Migrations.TestServerIpChange">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.TestServerIpChange.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.TestServerIpChange.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:BankingWebApi.Migrations.TestServerIpChange.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
         </member>
         <member name="T:BankingWebApi.Models.AccountCreate">
             <summary>

@@ -6,7 +6,7 @@ using BankingWebApi.Context;
 namespace BankingWebApi.Repositories;
 public class AccountRepository : IAccountRepository
 {
-    private readonly AccountsContext _context;
+    private readonly AccountsDbContext _context;
     private enum _sortBy
     {
         CreatedDate,
@@ -33,7 +33,7 @@ public class AccountRepository : IAccountRepository
         return true;
     }
 
-    public AccountRepository(AccountsContext context)
+    public AccountRepository(AccountsDbContext context)
     {
         _context = context;
     }
@@ -47,8 +47,7 @@ public class AccountRepository : IAccountRepository
 
         var accounts = await _context.Accounts
             .Where(account =>
-                //account.Name.Contains(filters.SearchTerm, StringComparison.CurrentCultureIgnoreCase)
-                account.Name.ToLower() == filters.SearchTerm.ToLower()
+                account.Name.ToLower().Contains(filters.SearchTerm.ToLower())
                 && (active != null ? active == account.Active : true)) 
             .OrderByDynamic(account => sortBy.GetValue(account), sortOrder == "Asc" ? true : false)
             .Skip(pageSize * (filters.PageNumber - 1))

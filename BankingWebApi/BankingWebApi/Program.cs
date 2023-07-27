@@ -8,19 +8,16 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using BankingWebApi.Context;
-using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var currencyKey = builder.Configuration.GetValue<string>("CURRENCY_API_KEY");
 
 // Database Context 
-
-//builder.Services.AddDbContext<AccountsContext>(opt => opt.UseInMemoryDatabase("Account"));
 builder.Services.AddDbContext<AccountsDbContext>(options => options
     .UseSqlServer(builder.Configuration.GetConnectionString("AccountsDbContext")));
+//builder.Services.AddDbContext<AccountsContext>(opt => opt.UseInMemoryDatabase("Account"));
 
 // Add services to the container.
-
 builder.Services.AddControllers(options =>
 {
     options.RespectBrowserAcceptHeader = true;
@@ -81,10 +78,29 @@ builder.Services.AddAuthentication("Bearer")
                 Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"]))
         };
     });
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Update database
+using var scope = app.Services.CreateScope();
+try
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
+    if (dbContext.Database.IsSqlServer())
+    {
+        dbContext.Database.Migrate();
+    }
+}
+catch (Exception ex)
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
+    logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+
+    throw;
+}
+
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
