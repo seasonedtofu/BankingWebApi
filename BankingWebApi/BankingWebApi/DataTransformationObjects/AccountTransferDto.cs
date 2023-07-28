@@ -1,10 +1,8 @@
-﻿using BankingWebApi.Interfaces;
-
-namespace BankingWebApi.Models;
+﻿namespace BankingWebApi.DataTransformationObjects;
 /// <summary>
 /// Shape of object for transferring money between accounts endpoint.
 /// </summary>
-public class AccountTransfer: IAccountTransfer
+public class AccountTransferDto
 {
     public Guid TransferFromId { get; set; }
     public Guid TransferToId { get; set; }

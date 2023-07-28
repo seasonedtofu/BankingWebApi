@@ -2,6 +2,7 @@
 using BankingWebApi.Models;
 using BankingWebApi.Clients;
 using BankingWebApi.Interfaces;
+using BankingWebApi.DataTransformationObjects;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 
@@ -46,7 +47,7 @@ public class AccountsController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<Account>> GetAccounts([FromQuery] AccountsFilter filters)
+    public async Task<IList<AccountDto>> GetAccounts([FromQuery] AccountsFilter filters)
     {
         var (accounts, paginationMetadata) = await _accountRepository.GetAccounts(filters);
         Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
@@ -66,11 +67,11 @@ public class AccountsController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Account>> GetAccount(Guid id)
+    public async Task<ActionResult<AccountDto>> GetAccount(Guid id)
     {
         try
         {
-            var account = await _accountRepository.GetAccount(id);
+            var account = await _accountRepository.GetAccountDto(id);
             return account;
         }
         catch (InvalidOperationException e)
@@ -102,7 +103,7 @@ public class AccountsController : ControllerBase
     {
         try
         {
-            var account = await _accountRepository.GetAccount(id);
+            var account = await _accountRepository.GetAccountDto(id);
             var apiKey = _configuration.GetValue<string>("CURRENCY_API_KEY");
             var response = await _currencyClient.GetCurrencyRate(currency.ToUpper(), apiKey);
 
@@ -246,7 +247,7 @@ public class AccountsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Transfer(AccountTransfer accountTransfer)
+    public async Task<IActionResult> Transfer(AccountTransferDto accountTransfer)
     {
         try
         {
@@ -270,7 +271,7 @@ public class AccountsController : ControllerBase
     /// <summary>
     /// Creates an account.
     /// </summary>
-    /// <param name="accountCreate">
+    /// <param name="createAccount">
     /// Model for creating account, contains:
     /// Name: Name(string) of account holder.
     /// Balance: Decimal amount of initial deposit of money.
@@ -281,9 +282,9 @@ public class AccountsController : ControllerBase
     /// <response code="200">Returns account that was created.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<AccountCreate>> PostAccount(AccountCreate accountCreate)
+    public async Task<ActionResult<CreateAccountDto>> PostAccount(CreateAccountDto createAccount)
     {
-        var account = await _accountRepository.CreateAccount(accountCreate);
+        var account = await _accountRepository.CreateAccount(createAccount);
         return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
     }
 

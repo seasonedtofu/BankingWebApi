@@ -1,7 +1,5 @@
-﻿using BankingWebApi.Interfaces;
-
-namespace BankingWebApi.Models;
-public class Account: Entity, IAccount
+﻿namespace BankingWebApi.Models;
+public class Account: Entity
 {
     public Guid Id { get; init; }
     public string? Name { get; set; }

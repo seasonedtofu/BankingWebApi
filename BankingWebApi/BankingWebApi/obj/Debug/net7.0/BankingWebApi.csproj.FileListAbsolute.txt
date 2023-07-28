@@ -264,3 +264,5 @@ C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\System.Web.H
 C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\System.Linq.Dynamic.Core.dll
 C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\System.Linq.Async.dll
 C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\System.Linq.Async.Queryable.dll
+C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\AutoMapper.dll
+C:\Repos\BankingWebApi\BankingWebApi\BankingWebApi\bin\Debug\net7.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

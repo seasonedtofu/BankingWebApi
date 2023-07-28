@@ -2,11 +2,14 @@
 using BankingWebApi.Models;
 using BankingWebApi.Extensions;
 using BankingWebApi.Context;
+using BankingWebApi.DataTransformationObjects;
+using AutoMapper;
 
 namespace BankingWebApi.Repositories;
 public class AccountRepository : IAccountRepository
 {
     private readonly AccountsDbContext _context;
+    private readonly IMapper _mapper;
     private enum _sortBy
     {
         CreatedDate,
@@ -19,7 +22,6 @@ public class AccountRepository : IAccountRepository
         Asc,
         Desc
     }
-
     private bool AccountExistsAndActive(Account account)
     {
         if (account is null)
@@ -32,35 +34,7 @@ public class AccountRepository : IAccountRepository
         }
         return true;
     }
-
-    public AccountRepository(AccountsDbContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<(IEnumerable<Account>, PaginationMetadata)> GetAccounts(AccountsFilter filters)
-    {
-        var pageSize = filters.PageSize;
-        var active = filters.Active;
-        var sortBy = typeof(Account).GetProperty(filters.SortBy);
-        var sortOrder = filters.SortOrder;
-
-        var accounts = await _context.Accounts
-            .Where(account =>
-                account.Name.ToLower().Contains(filters.SearchTerm.ToLower())
-                && (active != null ? active == account.Active : true)) 
-            .OrderByDynamic(account => sortBy.GetValue(account), sortOrder == "Asc" ? true : false)
-            .Skip(pageSize * (filters.PageNumber - 1))
-            .Take(pageSize)
-            .ToAsyncEnumerable()
-            .ToListAsync();
-
-        var paginationMetadata = new PaginationMetadata(accounts.Count(), pageSize, filters.PageNumber);
-
-        return (accounts, paginationMetadata);
-    }
-
-    public async Task<Account> GetAccount(Guid id)
+    private async Task<Account> GetAccount(Guid id)
     {
         var account = await _context.Accounts.FindAsync(id);
 
@@ -70,6 +44,40 @@ public class AccountRepository : IAccountRepository
         }
 
         return account;
+    }
+
+    public AccountRepository(AccountsDbContext context, IMapper mapper)
+    {
+        _context = context;
+        _mapper = mapper;
+    }
+
+    public async Task<(IList<AccountDto>, PaginationMetadata)> GetAccounts(AccountsFilter filters)
+    {
+        var pageSize = filters.PageSize;
+        var active = filters.Active;
+        var sortBy = typeof(Account).GetProperty(filters.SortBy);
+        var sortOrder = filters.SortOrder;
+
+        var accounts = _mapper.Map<IList<AccountDto>>(
+            await _context.Accounts
+                .Where(account =>
+                    account.Name.ToLower().Contains(filters.SearchTerm.ToLower())
+                    && (active != null ? active == account.Active : true))
+                .OrderByDynamic(account => sortBy.GetValue(account), sortOrder == "Asc" ? true : false)
+                .Skip(pageSize * (filters.PageNumber - 1))
+                .Take(pageSize)
+                .ToAsyncEnumerable()
+                .ToListAsync());
+
+        var paginationMetadata = new PaginationMetadata(accounts.Count(), pageSize, filters.PageNumber);
+
+        return (accounts, paginationMetadata);
+    }
+
+    public async Task<AccountDto> GetAccountDto(Guid id)
+    {
+        return _mapper.Map<AccountDto>(await GetAccount(id));
     }
 
     public async Task ChangeName(Guid id, string name)
@@ -119,7 +127,7 @@ public class AccountRepository : IAccountRepository
         }
     }
 
-    public async Task Transfer(AccountTransfer accountTransfer)
+    public async Task Transfer(AccountTransferDto accountTransfer)
     {
         var accountFrom = await GetAccount(accountTransfer.TransferFromId);
         var accountTo = await GetAccount(accountTransfer.TransferToId);
@@ -132,7 +140,7 @@ public class AccountRepository : IAccountRepository
         }
     }
 
-    public async Task<Account> CreateAccount(AccountCreate accountCreate)
+    public async Task<Account> CreateAccount(CreateAccountDto accountCreate)
     {
         var account = new Account
         {
