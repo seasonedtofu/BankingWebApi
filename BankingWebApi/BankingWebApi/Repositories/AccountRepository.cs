@@ -52,14 +52,14 @@ public class AccountRepository : IAccountRepository
         _mapper = mapper;
     }
 
-    public async Task<(IList<AccountDto>, PaginationMetadata)> GetAccounts(AccountsFilter filters)
+    public async Task<(List<AccountDto>, PaginationMetadata)> GetAccounts(AccountsFilter filters)
     {
         var pageSize = filters.PageSize;
         var active = filters.Active;
         var sortBy = typeof(Account).GetProperty(filters.SortBy);
         var sortOrder = filters.SortOrder;
 
-        var accounts = _mapper.Map<IList<AccountDto>>(
+        var accounts = _mapper.Map<List<AccountDto>>(
             await _context.Accounts
                 .Where(account =>
                     account.Name.ToLower().Contains(filters.SearchTerm.ToLower())

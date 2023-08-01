@@ -93,7 +93,7 @@
             <response code="400">Returns bad request if account is not active or balance is less than withdrawal amount.</response>
             <response code="404">Returns not found if no account found with provided id.</response>
         </member>
-        <member name="M:BankingWebApi.Controllers.AccountsController.Transfer(BankingWebApi.DataTransformationObjects.AccountTransferDTO)">
+        <member name="M:BankingWebApi.Controllers.AccountsController.Transfer(BankingWebApi.DataTransformationObjects.AccountTransferDto)">
             <summary>
             Transfers a provided amount from one user's account to another users's account.
             </summary>
@@ -110,7 +110,7 @@
             <response code="400">Returns bad request if any account is inactive or transfer amount is more than transfer from account balance.</response>
             <response code="404">Returns not found if any account not found with provided id.</response>
         </member>
-        <member name="M:BankingWebApi.Controllers.AccountsController.PostAccount(BankingWebApi.DataTransformationObjects.CreateAccountDTO)">
+        <member name="M:BankingWebApi.Controllers.AccountsController.PostAccount(BankingWebApi.DataTransformationObjects.CreateAccountDto)">
             <summary>
             Creates an account.
             </summary>
@@ -163,12 +163,12 @@
             </returns>
             <response code="200">Returns token.</response>
         </member>
-        <member name="T:BankingWebApi.DataTransformationObjects.AccountTransferDTO">
+        <member name="T:BankingWebApi.DataTransformationObjects.AccountTransferDto">
             <summary>
             Shape of object for transferring money between accounts endpoint.
             </summary>
         </member>
-        <member name="T:BankingWebApi.DataTransformationObjects.CreateAccountDTO">
+        <member name="T:BankingWebApi.DataTransformationObjects.CreateAccountDto">
             <summary>
             Shape of model for creating account endpoint.
             </summary>

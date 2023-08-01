@@ -5,7 +5,7 @@ namespace BankingWebApi.Interfaces
 {
     public interface IAccountRepository
     {
-        Task<(IList<AccountDto>, PaginationMetadata)> GetAccounts(AccountsFilter filters);
+        Task<(List<AccountDto>, PaginationMetadata)> GetAccounts(AccountsFilter filters);
         Task<AccountDto> GetAccountDto(Guid id);
         Task ChangeName(Guid id, string name);
         Task Deposit(Guid id, decimal amount);

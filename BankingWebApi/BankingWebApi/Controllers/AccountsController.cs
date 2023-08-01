@@ -14,7 +14,7 @@ namespace BankingWebApi.Controllers;
 [ApiVersion("1.0")]
 [Authorize]
 [ApiController]
-public class AccountsController : ControllerBase
+public class AccountsController : ControllerBase, IAccountsController
 {
     private readonly CurrencyClient _currencyClient;
     private readonly IConfiguration _configuration;
@@ -47,7 +47,7 @@ public class AccountsController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IList<AccountDto>> GetAccounts([FromQuery] AccountsFilter filters)
+    public async Task<List<AccountDto>> GetAccounts([FromQuery] AccountsFilter filters)
     {
         var (accounts, paginationMetadata) = await _accountRepository.GetAccounts(filters);
         Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
