@@ -3,9 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankingWebApi", "BankingWebApi\BankingWebApi.csproj", "{8395A799-5732-4577-ADB8-755B4AB8CC41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "BankingWebApi\Web.csproj", "{8395A799-5732-4577-ADB8-755B4AB8CC41}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{23A5AC18-0163-4B79-88A7-37BDB968FD14}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{99AFDAF3-5405-4152-B598-A74F89C5D24E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "..\Domain\Domain.csproj", "{58F26429-AF85-4D66-922C-6004D6582B0A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "..\Application\Application.csproj", "{79104F17-60AA-4C30-8ED3-794DACFDB173}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "..\Infrastructure\Infrastructure.csproj", "{9781A4AF-BEB9-4093-95F6-1820D33E7136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +29,27 @@ Global
 		{23A5AC18-0163-4B79-88A7-37BDB968FD14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23A5AC18-0163-4B79-88A7-37BDB968FD14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23A5AC18-0163-4B79-88A7-37BDB968FD14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58F26429-AF85-4D66-922C-6004D6582B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58F26429-AF85-4D66-922C-6004D6582B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58F26429-AF85-4D66-922C-6004D6582B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58F26429-AF85-4D66-922C-6004D6582B0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79104F17-60AA-4C30-8ED3-794DACFDB173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79104F17-60AA-4C30-8ED3-794DACFDB173}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79104F17-60AA-4C30-8ED3-794DACFDB173}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79104F17-60AA-4C30-8ED3-794DACFDB173}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9781A4AF-BEB9-4093-95F6-1820D33E7136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9781A4AF-BEB9-4093-95F6-1820D33E7136}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9781A4AF-BEB9-4093-95F6-1820D33E7136}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9781A4AF-BEB9-4093-95F6-1820D33E7136}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8395A799-5732-4577-ADB8-755B4AB8CC41} = {99AFDAF3-5405-4152-B598-A74F89C5D24E}
+		{58F26429-AF85-4D66-922C-6004D6582B0A} = {99AFDAF3-5405-4152-B598-A74F89C5D24E}
+		{79104F17-60AA-4C30-8ED3-794DACFDB173} = {99AFDAF3-5405-4152-B598-A74F89C5D24E}
+		{9781A4AF-BEB9-4093-95F6-1820D33E7136} = {99AFDAF3-5405-4152-B598-A74F89C5D24E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8D60FA09-C774-427A-A12F-50D043EE89D0}

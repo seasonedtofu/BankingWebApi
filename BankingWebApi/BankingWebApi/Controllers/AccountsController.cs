@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BankingWebApi.Models;
-using BankingWebApi.Clients;
-using BankingWebApi.Interfaces;
-using BankingWebApi.DataTransformationObjects;
+using BankingWebApi.Application.Interfaces;
+using BankingWebApi.Application.Models;
+using BankingWebApi.Domain.Entities;
+using BankingWebApi.Web.Clients;
+using BankingWebApi.Web.Interfaces;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 

@@ -1,13 +1,13 @@
-using Microsoft.EntityFrameworkCore;
-using BankingWebApi.Clients;
 using BankingWebApi.Repositories;
-using BankingWebApi.Interfaces;
-using System.Reflection;
-using BankingWebApi.Formatters;
+using BankingWebApi.Application.Interfaces;
+using BankingWebApi.Infrastructure.Data;
+using BankingWebApi.Web.Clients;
+using BankingWebApi.Web.Formatters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.OpenApi.Models;
-using BankingWebApi.Context;
+using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var currencyKey = builder.Configuration.GetValue<string>("CURRENCY_API_KEY");

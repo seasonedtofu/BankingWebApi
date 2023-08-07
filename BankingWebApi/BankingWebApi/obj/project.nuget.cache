@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "u1vgsaIwtaV2JQm7xvo5kCnwXPxI+CG/N6q6FbUPjtR8qf2t5HUGwf1ITY8LyXrHMjEfJ7Pd09eBfQ96MoGJmA==",
+  "dgSpecHash": "nl5b0luAZCjYH+Hhtw5PYtmj6aCXe08jBY1iEuLCsd9BS+245IflZAYR/2syI7waWU2w8rDbkQYXQkcE5T7U0Q==",
   "success": true,
-  "projectFilePath": "C:\\Repos\\BankingWebApi\\BankingWebApi\\BankingWebApi\\BankingWebApi.csproj",
+  "projectFilePath": "C:\\Repos\\BankingWebApi\\BankingWebApi\\BankingWebApi\\Web.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\azhu\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\azhu\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

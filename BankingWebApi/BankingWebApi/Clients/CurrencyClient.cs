@@ -1,7 +1,7 @@
-﻿using BankingWebApi.Interfaces;
+﻿using BankingWebApi.Web.Interfaces;
 using Newtonsoft.Json;
 
-namespace BankingWebApi.Clients
+namespace BankingWebApi.Web.Clients
 {
     public class CurrencyClient : ICurrencyClient
     {

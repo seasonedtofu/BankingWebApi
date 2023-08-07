@@ -1,8 +1,8 @@
-﻿using BankingWebApi.DataTransformationObjects;
-using BankingWebApi.Models;
+﻿using BankingWebApi.Domain.Entities;
+using BankingWebApi.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BankingWebApi.Interfaces
+namespace BankingWebApi.Web.Interfaces
 {
     public interface IAccountsController
     {

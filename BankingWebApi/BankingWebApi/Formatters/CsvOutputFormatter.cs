@@ -5,7 +5,7 @@ using System.Collections;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace BankingWebApi.Formatters
+namespace BankingWebApi.Web.Formatters
 {
     public class CsvOutputFormatter : TextOutputFormatter
     {
