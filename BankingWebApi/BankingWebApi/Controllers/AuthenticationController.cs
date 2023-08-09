@@ -3,7 +3,7 @@ using BankingWebApi.Application.Records;
 using BankingWebApi.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BankingWebApi.Controllers
+namespace BankingWebApi.Web.Controllers
 {
     [Route("api/authentication")]
     [ApiController]

@@ -7,7 +7,7 @@ using BankingWebApi.Web.Interfaces;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 
-namespace BankingWebApi.Controllers;
+namespace BankingWebApi.Web.Controllers;
 /// <summary>
 /// Controller for web api endpoints.
 /// </summary>
