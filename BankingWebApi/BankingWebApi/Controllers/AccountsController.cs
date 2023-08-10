@@ -23,7 +23,7 @@ public class AccountsController : ControllerBase, IAccountsController
 
     /// <summary>
     /// Accounts controller.
-    /// </summary>
+    /// </summary>      
     /// <param name="currencyClient">Dependency injection for currency client for API calls.</param>
     /// <param name="configuration">Dependency injection for appsettings.json to get API key.</param>
     /// <param name="accountRepository">Dependency injection for account repository.</param>
@@ -51,7 +51,8 @@ public class AccountsController : ControllerBase, IAccountsController
     public async Task<List<AccountDto>> GetAccounts([FromQuery] AccountsFilter filters)
     {
         var (accounts, paginationMetadata) = await _accountRepository.GetAccounts(filters);
-        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+        var serializedPaginationMetadata = JsonSerializer.Serialize(paginationMetadata);
+        //Response.Headers.Add("X-Pagination", serializedPaginationMetadata);
 
         return accounts;
     }

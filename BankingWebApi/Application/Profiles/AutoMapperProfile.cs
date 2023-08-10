@@ -2,7 +2,7 @@
 using BankingWebApi.Application.Models;
 using AutoMapper;
 
-namespace BankingWebApi.Profiles
+namespace BankingWebApi.Application.Profiles
 {
     public class AutoMapperProfile : Profile
     {

@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{CF4D7447-97AC-48F3-96B1-AE042F3CF952}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.UnitTests", "..\Application.UnitTests\Application.UnitTests.csproj", "{B2B30185-EB74-41D0-9CD4-A197F3B5C902}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.UnitTests", "..\Application.UnitTests\Application.UnitTests.csproj", "{B2B30185-EB74-41D0-9CD4-A197F3B5C902}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

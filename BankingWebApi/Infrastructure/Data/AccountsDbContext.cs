@@ -10,7 +10,7 @@ namespace BankingWebApi.Infrastructure.Data
             SavingChanges += AccountsContext_SavingChanges;
         }
 
-        public DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<Account> Accounts { get; set; }
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             try
