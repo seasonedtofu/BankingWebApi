@@ -1,13 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using AutoMapper;
+﻿using AutoMapper;
 using BankingWebApi.Application.Interfaces;
 using BankingWebApi.Application.Models;
 using BankingWebApi.Domain.Entities;
 using BankingWebApi.Infrastructure.Data;
 using BankingWebApi.Repositories;
 using Microsoft.EntityFrameworkCore;
-using MockQueryable.Moq;
 using Moq;
 using Moq.EntityFrameworkCore;
 using Xunit;
@@ -67,9 +64,6 @@ namespace BankingWebApi.Tests
             var (accounts, paginationMetadata) = await _repository.GetAccounts(filter);
             Assert.IsType<List<AccountDto>>(accounts);
             Assert.NotEmpty(accounts);
-
-            //Debug.WriteLine("wtf");
-            //foreach(var acc in accounts) { Debug.WriteLine(acc.Id); }
         }
 
         [Fact]
