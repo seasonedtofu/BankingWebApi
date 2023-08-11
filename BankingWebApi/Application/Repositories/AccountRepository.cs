@@ -4,6 +4,7 @@ using BankingWebApi.Application.Models;
 using BankingWebApi.Domain.Entities;
 using BankingWebApi.Infrastructure.Data;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankingWebApi.Repositories;
 public class AccountRepository : IAccountRepository
