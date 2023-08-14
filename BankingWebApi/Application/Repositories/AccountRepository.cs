@@ -5,6 +5,7 @@ using BankingWebApi.Domain.Entities;
 using BankingWebApi.Infrastructure.Data;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace BankingWebApi.Repositories;
 public class AccountRepository : IAccountRepository
@@ -84,9 +85,11 @@ public class AccountRepository : IAccountRepository
     public async Task ChangeName(Guid id, string name)
     {
         var account = await GetAccount(id);
+        Debug.WriteLine("called");
 
         if (AccountExistsAndActive(account))
         {
+            Debug.WriteLine("wtf");
             account.Name = name;
             await _context.SaveChangesAsync();
         }
