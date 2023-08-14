@@ -48,6 +48,12 @@ namespace BankingWebApi.Tests
             _repository.Setup(r => r.GetAccountDto(It.IsAny<Guid>())).Returns((Guid id) =>
             {
                 var account = _mockDbSet.Object.Where((account) => account.Id == id).FirstOrDefault();
+
+                if (account is null)
+                {
+                    throw new InvalidOperationException("Account does not exist.");
+                }
+
                 return Task.FromResult(_mapper.Map<AccountDto>(account));
             });
         }
@@ -103,6 +109,14 @@ namespace BankingWebApi.Tests
             Assert.True(account.Id == _idTwo);
         }
 
+
+        [Fact]
+        public async Task GetAccountInvalidGuidThrowsInvalidOperationException()
+        {
+            var newGuid = Guid.NewGuid();
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _repository.Object.GetAccountDto(newGuid));
+        }
+
         [Fact]
         public async void ChangeNameChangesName()
         {
@@ -144,6 +158,18 @@ namespace BankingWebApi.Tests
         }
 
         [Fact]
+        public async void DepositAmountLessThanZeroThrowsOutOfRangeException()
+        {
+            _repository.Setup(r => r.Deposit(It.IsAny<Guid>(), It.IsAny<decimal>()))
+                .Callback((Guid id, decimal amount) =>
+                {
+                    if (amount < 0) throw new ArgumentOutOfRangeException("Cannot deposit a negative amount.");
+                });
+
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _repository.Object.Deposit(_idOne, -100));
+        }
+
+        [Fact]
         public async void WithdrawFromAccountSubtractsFromBalance()
         {
             _repository.Setup(r => r.Withdraw(It.IsAny<Guid>(), It.IsAny<decimal>()))
@@ -160,6 +186,212 @@ namespace BankingWebApi.Tests
             await _repository.Object.Withdraw(_idOne, 50);
             var newBalance = (await _repository.Object.GetAccountDto(_idOne)).Balance;
             Assert.True(newBalance == originalBalance - 50);
+        }
+
+        [Fact]
+        public async void WithdrawAmountLessThanZeroThrowsOutOfRangeException()
+        {
+            _repository.Setup(r => r.Withdraw(It.IsAny<Guid>(), It.IsAny<decimal>()))
+                .Callback((Guid id, decimal amount) =>
+                {
+                    if (amount < 0) throw new ArgumentOutOfRangeException("Cannot withdraw a negative amount.");
+                });
+
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _repository.Object.Withdraw(_idOne, -100));
+        }
+
+        [Fact]
+        public async void WithdrawAmountGreaterThanAccountBalanceThrowsInvalidOperationException()
+        {
+            _repository.Setup(r => r.Withdraw(It.IsAny<Guid>(), It.IsAny<decimal>()))
+                .Callback((Guid id, decimal amount) =>
+                {
+                    var account = _mockDbSet.Object.Where((account) => account.Id == id).FirstOrDefault();
+                    if (amount > account.Balance) throw new InvalidOperationException("Requested withdrawal amount is more than account balance.");
+                });
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _repository.Object.Withdraw(_idOne, 1000));
+        }
+
+        [Fact]
+        public async void TransferMoneyFromOneAccountToAnotherActuallyTransfers()
+        {
+            _repository.Setup(r => r.Transfer(It.IsAny<AccountTransferDto>()))
+                .Callback((AccountTransferDto accountTransferDto) =>
+                {
+                    var transferFrom = _mockDbSet.Object.Where((account) => account.Id == accountTransferDto.TransferFromId).FirstOrDefault();
+                    var transferTo = _mockDbSet.Object.Where((account) => account.Id == accountTransferDto.TransferToId).FirstOrDefault();
+                    transferFrom.Balance -= accountTransferDto.Amount;
+                    transferTo.Balance += accountTransferDto.Amount;
+                });
+
+            var transferFromOriginalBalance = (await _repository.Object.GetAccountDto(_idTwo)).Balance;
+            var transferToOriginalBalance = (await _repository.Object.GetAccountDto(_idOne)).Balance;
+            var accountTransferDto = new AccountTransferDto()
+            {
+                TransferFromId = _idTwo,
+                TransferToId = _idOne,
+                Amount = 50,
+            };
+
+            await _repository.Object.Transfer(accountTransferDto);
+            var transferFromTransferredBalance = (await _repository.Object.GetAccountDto(_idTwo)).Balance;
+            var transferToTransferredBalance = (await _repository.Object.GetAccountDto(_idOne)).Balance;
+
+            Assert.True(transferFromTransferredBalance == transferFromOriginalBalance - 50);
+            Assert.True(transferToTransferredBalance == transferToOriginalBalance + 50);
+        }
+
+        [Fact]
+        public async void IfTransferFromAmountIsLessThanZeroOrGreaterThanAccountBalanceThrowOutOfRangeException()
+        {
+            _repository.Setup(r => r.Transfer(It.IsAny<AccountTransferDto>()))
+                .Callback((AccountTransferDto accountTransferDto) =>
+                {
+                    var amount = accountTransferDto.Amount;
+
+                    if (amount < 0) throw new ArgumentOutOfRangeException("Cannot deposit/withdraw a negative amount.");
+                    var transferFrom = _mockDbSet.Object.Where((account) => account.Id == accountTransferDto.TransferFromId).FirstOrDefault();
+                    if (amount > transferFrom.Balance) throw new ArgumentOutOfRangeException("Cannot withdraw more than account balance.");
+                });
+
+            var accountTransferDto = new AccountTransferDto()
+            {
+                TransferFromId = _idTwo,
+                TransferToId = _idOne,
+                Amount = 500,
+            };
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _repository.Object.Transfer(accountTransferDto));
+            accountTransferDto.Amount = -100;
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _repository.Object.Transfer(accountTransferDto));
+        }
+
+        [Fact]
+        public async void CreateAccountAddsAccountToDb()
+        {
+            _repository.Setup(r => r.CreateAccount(It.IsAny<CreateAccountDto>()))
+                .Callback((CreateAccountDto createAccountDto) =>
+                {
+                    var account = new Account
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = createAccountDto.Name,
+                        Balance = createAccountDto.Balance,
+                        Active = true,
+                    };
+
+                    _mockDbSet.Object.Add(account);
+                });
+
+            var originalAmountOfAccounts = _mockDbSet.Object.Count();
+            var createAccountDto = new CreateAccountDto()
+            {
+                Name = "test",
+                Balance = 20,
+            };
+
+            await _repository.Object.CreateAccount(createAccountDto);
+            var updatedAmountOfAccounts = _mockDbSet.Object.Count();
+            Assert.True(updatedAmountOfAccounts == originalAmountOfAccounts + 1);
+        }
+
+        [Fact]
+        public async void DeleteAccountSoftDeletesAccount()
+        {
+            _repository.Setup(r => r.DeleteAccount(It.IsAny<Guid>()))
+                .Callback((Guid id) =>
+                {
+                    var account = _mockDbSet.Object.Where((account) => account.Id == id).FirstOrDefault();
+                    if (account is not null)
+                    {
+                        account.Active = false;
+                    }
+                });
+
+            await _repository.Object.DeleteAccount(_idOne);
+            var active = (await _repository.Object.GetAccountDto(_idOne)).Active;
+            Assert.False(active);
+        }
+
+        [Fact]
+        public async void DeleteAccountIfAlreadySoftDeletedOrHasBalanceGreaterThanZeroThrowInvalidOperationException()
+        {
+            _repository.Setup(r => r.DeleteAccount(It.IsAny<Guid>()))
+                .Callback((Guid id) =>
+                {
+                    var account = _mockDbSet.Object.Where((account) => account.Id == id).FirstOrDefault();
+                    if (account is not null)
+                    {
+                        if (account.Active is false)
+                        {
+                            throw new InvalidOperationException("Account is already deactivated.");
+                        }
+                        if (account.Balance > 0)
+                        {
+                            throw new InvalidOperationException("Account still has a balance of greater than 0, please withdraw before deactivating account.");
+                        }
+                    }
+                });
+
+            var testDeletedAccountId = Guid.NewGuid();
+            var testDeletedAccount = new Account
+            {
+                Id = testDeletedAccountId,
+                Name = "test",
+                Balance = 0,
+                Active = false,
+            };
+            _mockDbSet.Object.Add(testDeletedAccount);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _repository.Object.DeleteAccount(testDeletedAccountId));
+
+            var testAccountWithBalanceId = Guid.NewGuid();
+            var testAccountWithBalance = new Account
+            {
+                Id = testAccountWithBalanceId,
+                Name = "test",
+                Balance = 100,
+                Active = true,
+            };
+            _mockDbSet.Object.Add(testAccountWithBalance);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _repository.Object.DeleteAccount(testAccountWithBalanceId));
+        }
+
+        [Fact]
+        public async void ReactivateAccountResetsActiveToTrue()
+        {
+            _repository.Setup(r => r.ReactivateAccount(It.IsAny<Guid>()))
+                .Callback((Guid id) =>
+                {
+                    var account = _mockDbSet.Object.Where((account) => account.Id == id).FirstOrDefault();
+                    if (account is not null)
+                    {
+                        account.Active = false;
+                        Assert.False(account.Active);
+                        account.Active = true;
+                    }
+                });
+
+            await _repository.Object.ReactivateAccount(_idOne);
+            var active = (await _repository.Object.GetAccountDto(_idOne)).Active;
+            Assert.True(active);
+        }
+
+        [Fact]
+        public async void ReactivateAccountIfAlreadyActiveThrowInvalidOperationException()
+        {
+            _repository.Setup(r => r.ReactivateAccount(It.IsAny<Guid>()))
+                .Callback((Guid id) =>
+                {
+                    var account = _mockDbSet.Object.Where((account) => account.Id == id).FirstOrDefault();
+                    if (account is not null && account.Active is true)
+                    {
+                        throw new InvalidOperationException("Account is already active.");
+                    }
+                });
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _repository.Object.ReactivateAccount(_idOne));
         }
     }
 }
