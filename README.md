@@ -1,5 +1,6 @@
 After cloning repo, run the solution by opening a terminal and going into the ```BankingWebApi\BankingWebApi``` directory.
 Then run ```docker compose build``` & ```docker compose up```
+
 Note: You need Docker/Docker Desktop to be installed.
 
 In the swagger UI, scroll down to the Authentication controller and run the Authentication: ```/api/authentication/CreateToken``` POST
