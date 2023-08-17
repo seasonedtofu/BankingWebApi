@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using BankingWebApi.Application.Interfaces;
+﻿using BankingWebApi.Application.Interfaces;
 using BankingWebApi.Application.Models;
 using BankingWebApi.Domain.Entities;
 using BankingWebApi.Web.Clients;
 using BankingWebApi.Web.Interfaces;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace BankingWebApi.Web.Controllers;
 /// <summary>
@@ -19,19 +19,19 @@ public class AccountsController : ControllerBase, IAccountsController
 {
     private readonly CurrencyClient _currencyClient;
     private readonly IConfiguration _configuration;
-    private readonly IAccountRepository _accountRepository;
+    private readonly IAccountsServices _accountsServices;
 
     /// <summary>
     /// Accounts controller.
     /// </summary>      
     /// <param name="currencyClient">Dependency injection for currency client for API calls.</param>
     /// <param name="configuration">Dependency injection for appsettings.json to get API key.</param>
-    /// <param name="accountRepository">Dependency injection for account repository.</param>
-    public AccountsController(CurrencyClient currencyClient, IConfiguration configuration, IAccountRepository accountRepository)
+    /// <param name="accountsServices">Dependency injection for account repository.</param>
+    public AccountsController(CurrencyClient currencyClient, IConfiguration configuration, IAccountsServices accountsServices)
     {
         _currencyClient = currencyClient;
         _configuration = configuration;
-        _accountRepository = accountRepository;
+        _accountsServices = accountsServices;
     }
 
     /// <summary>
@@ -50,9 +50,9 @@ public class AccountsController : ControllerBase, IAccountsController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<List<AccountDto>> GetAccounts([FromQuery] AccountsFilter filters)
     {
-        var (accounts, paginationMetadata) = await _accountRepository.GetAccounts(filters);
+        var (accounts, paginationMetadata) = await _accountsServices.GetAccounts(filters);
         var serializedPaginationMetadata = JsonSerializer.Serialize(paginationMetadata);
-        //Response.Headers.Add("X-Pagination", serializedPaginationMetadata);
+        Response.Headers.Add("X-Pagination", serializedPaginationMetadata);
 
         return accounts;
     }
@@ -73,7 +73,7 @@ public class AccountsController : ControllerBase, IAccountsController
     {
         try
         {
-            var account = await _accountRepository.GetAccountDto(id);
+            var account = await _accountsServices.GetAccount(id);
             return account;
         }
         catch (InvalidOperationException e)
@@ -105,7 +105,7 @@ public class AccountsController : ControllerBase, IAccountsController
     {
         try
         {
-            var account = await _accountRepository.GetAccountDto(id);
+            var account = await _accountsServices.GetAccount(id);
             var apiKey = _configuration.GetValue<string>("CURRENCY_API_KEY");
             var response = await _currencyClient.GetCurrencyRate(currency.ToUpper(), apiKey);
 
@@ -145,7 +145,7 @@ public class AccountsController : ControllerBase, IAccountsController
     {
         try
         {
-            await _accountRepository.ChangeName(id, name);
+            await _accountsServices.ChangeName(id, name);
             return NoContent();
         }
         catch (InvalidOperationException e)
@@ -177,7 +177,7 @@ public class AccountsController : ControllerBase, IAccountsController
     {
         try
         {
-            await _accountRepository.Deposit(id, amount);
+            await _accountsServices.Deposit(id, amount);
             return NoContent();
         }
         catch (InvalidOperationException e)
@@ -213,7 +213,7 @@ public class AccountsController : ControllerBase, IAccountsController
     {
         try
         {
-            await _accountRepository.Withdraw(id, amount);
+            await _accountsServices.Withdraw(id, amount);
             return NoContent();
         }
         catch (InvalidOperationException e)
@@ -253,7 +253,7 @@ public class AccountsController : ControllerBase, IAccountsController
     {
         try
         {
-            await _accountRepository.Transfer(accountTransfer);
+            await _accountsServices.Transfer(accountTransfer);
             return NoContent();
         }
         catch (InvalidOperationException e)
@@ -286,7 +286,7 @@ public class AccountsController : ControllerBase, IAccountsController
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<CreateAccountDto>> PostAccount(CreateAccountDto createAccount)
     {
-        var account = await _accountRepository.CreateAccount(createAccount);
+        var account = await _accountsServices.CreateAccount(createAccount);
         return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
     }
 
@@ -308,7 +308,7 @@ public class AccountsController : ControllerBase, IAccountsController
     {
         try
         {
-            await _accountRepository.ReactivateAccount(id);
+            await _accountsServices.ReactivateAccount(id);
             return NoContent();
         }
         catch (InvalidOperationException e)
@@ -339,7 +339,7 @@ public class AccountsController : ControllerBase, IAccountsController
     {
         try
         {
-            await _accountRepository.DeleteAccount(id);
+            await _accountsServices.DeleteAccount(id);
             return NoContent();
         }
         catch (InvalidOperationException e)

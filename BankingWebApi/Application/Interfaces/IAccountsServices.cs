@@ -1,18 +1,19 @@
-﻿using BankingWebApi.Domain.Entities;
-using BankingWebApi.Application.Models;
+﻿using BankingWebApi.Application.Models;
+using BankingWebApi.Domain.Entities;
 
 namespace BankingWebApi.Application.Interfaces
 {
-    public interface IAccountRepository
+    public interface IAccountsServices
     {
+        Task<AccountDto> CreateAccount(CreateAccountDto accountCreate);
         Task<(List<AccountDto>, PaginationMetadata)> GetAccounts(AccountsFilter filters);
-        Task<AccountDto> GetAccountDto(Guid id);
+        Task<AccountDto> GetAccount(Guid id);
         Task ChangeName(Guid id, string name);
         Task Deposit(Guid id, decimal amount);
         Task Withdraw(Guid id, decimal amount);
         Task Transfer(AccountTransferDto accountTransfer);
-        Task<Account> CreateAccount(CreateAccountDto accountCreate);
-        Task ReactivateAccount(Guid id);
         Task DeleteAccount(Guid id);
+        Task ReactivateAccount(Guid id);
+        Task HardDeleteAccount(Guid id);
     }
 }

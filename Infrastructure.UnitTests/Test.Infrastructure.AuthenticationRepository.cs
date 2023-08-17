@@ -1,11 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using BankingWebApi.Application.Records;
-using BankingWebApi.Repositories;
+﻿using BankingWebApi.Infrastructure.Records;
+using BankingWebApi.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using System.IdentityModel.Tokens.Jwt;
 using Xunit;
 
-namespace Application.UnitTests
+namespace BankingWebApi.Infrastructure.Tests
 {
     sealed class MockConfiguration: IConfiguration
     {
@@ -34,17 +34,18 @@ namespace Application.UnitTests
         public IChangeToken GetReloadToken() => null;
     }
 
-    public class AuthenticationRespositoryTests
+    public class TestAuthenticationRepository
     {
         private AuthenticationRepository _repository = new AuthenticationRepository(new MockConfiguration());
-        public AuthenticationRespositoryTests() {}
+        public TestAuthenticationRepository() {}
 
         [Fact]
-        public void CreateToken_Generate_JWT_String()
+        public void CreateTokenGenerateJWTString()
         {
             var authRequest = new AuthenticationRequestBody("TestUserName", "TestPassword");
             var jwtToken = _repository.CreateToken(authRequest);
             var jwtIsEmpty = string.IsNullOrEmpty(jwtToken);
+
             Assert.False(jwtIsEmpty);
             Assert.True(new JwtSecurityTokenHandler().CanReadToken(jwtToken));
         }

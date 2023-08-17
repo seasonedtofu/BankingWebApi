@@ -1,6 +1,9 @@
-using BankingWebApi.Repositories;
 using BankingWebApi.Application.Interfaces;
+using BankingWebApi.Application.Profiles;
+using BankingWebApi.Application.Services;
 using BankingWebApi.Infrastructure.Data;
+using BankingWebApi.Infrastructure.Interfaces;
+using BankingWebApi.Infrastructure.Repositories;
 using BankingWebApi.Web.Clients;
 using BankingWebApi.Web.Formatters;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
-using BankingWebApi.Application.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 var currencyKey = builder.Configuration.GetValue<string>("CURRENCY_API_KEY");
@@ -28,6 +30,7 @@ builder.Services.AddHttpClient<CurrencyClient>(client =>
         client.BaseAddress = new Uri("https://api.freecurrencyapi.com/v1/latest?apikey="));
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+builder.Services.AddScoped<IAccountsServices, AccountsServices>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
 builder.Services.AddEndpointsApiExplorer();

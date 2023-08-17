@@ -1,12 +1,12 @@
-﻿using BankingWebApi.Application.Interfaces;
-using BankingWebApi.Application.Records;
+﻿using BankingWebApi.Infrastructure.Interfaces;
+using BankingWebApi.Infrastructure.Records;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BankingWebApi.Repositories
+namespace BankingWebApi.Infrastructure.Repositories
 {
     public class AuthenticationRepository : IAuthenticationRepository
     {

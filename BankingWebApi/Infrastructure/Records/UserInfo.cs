@@ -1,2 +1,2 @@
-﻿namespace BankingWebApi.Application.Records;
+﻿namespace BankingWebApi.Infrastructure.Records;
 public record UserInfo(Guid UserId, string UserName);

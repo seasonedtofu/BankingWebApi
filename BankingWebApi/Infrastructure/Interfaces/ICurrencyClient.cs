@@ -1,4 +1,4 @@
-﻿namespace BankingWebApi.Web.Interfaces
+﻿namespace BankingWebApi.Infrastructure.Interfaces
 {
     public interface ICurrencyClient
     {

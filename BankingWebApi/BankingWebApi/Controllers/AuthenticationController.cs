@@ -1,6 +1,6 @@
-﻿using BankingWebApi.Application.Interfaces;
-using BankingWebApi.Application.Records;
-using BankingWebApi.Repositories;
+﻿using BankingWebApi.Infrastructure.Interfaces;
+using BankingWebApi.Infrastructure.Records;
+using BankingWebApi.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankingWebApi.Web.Controllers

@@ -1,6 +1,6 @@
-﻿using BankingWebApi.Application.Records;
+﻿using BankingWebApi.Infrastructure.Records;
 
-namespace BankingWebApi.Application.Interfaces
+namespace BankingWebApi.Infrastructure.Interfaces
 {
     public interface IAuthenticationRepository
     {

@@ -1,4 +1,4 @@
-﻿using BankingWebApi.Web.Interfaces;
+﻿using BankingWebApi.Infrastructure.Interfaces;
 using Newtonsoft.Json;
 
 namespace BankingWebApi.Web.Clients

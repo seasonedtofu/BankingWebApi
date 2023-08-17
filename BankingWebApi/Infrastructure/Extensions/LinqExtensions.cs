@@ -1,4 +1,4 @@
-﻿namespace BankingWebApi.Application.Extensions
+﻿namespace BankingWebApi.Infrastructure.Extensions
 {
     internal static class LinqExtensions
     {
