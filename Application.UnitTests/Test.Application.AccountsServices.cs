@@ -1,15 +1,12 @@
 ﻿using BankingWebApi.Application.Interfaces;
-using BankingWebApi.Application.Services;
 using BankingWebApi.Application.Models;
 using BankingWebApi.Domain.Entities;
-using BankingWebApi.Infrastructure.Repositories;
-using AutoMapper;
-using Xunit;
-using BankingWebApi.Infrastructure.Data;
-using Moq;
 using BankingWebApi.Infrastructure.Interfaces;
+using AutoMapper;
+using Moq;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Xunit;
 
 namespace BankingWebApi.Application.Tests
 {
