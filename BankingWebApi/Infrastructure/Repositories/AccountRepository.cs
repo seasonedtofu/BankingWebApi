@@ -1,7 +1,7 @@
 ﻿using BankingWebApi.Domain.Entities;
+using BankingWebApi.Domain.Interfaces;
 using BankingWebApi.Infrastructure.Data;
 using BankingWebApi.Infrastructure.Extensions;
-using BankingWebApi.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankingWebApi.Infrastructure.Repositories;

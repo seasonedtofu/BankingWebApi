@@ -1,7 +1,7 @@
 ﻿using BankingWebApi.Application.Interfaces;
 using BankingWebApi.Application.Models;
 using BankingWebApi.Domain.Entities;
-using BankingWebApi.Infrastructure.Interfaces;
+using BankingWebApi.Domain.Interfaces;
 using AutoMapper;
 
 namespace BankingWebApi.Application.Services

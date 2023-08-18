@@ -1,7 +1,7 @@
-﻿using BankingWebApi.Application.Interfaces;
+﻿using BankingWebApi.Application.Clients;
+using BankingWebApi.Application.Interfaces;
 using BankingWebApi.Application.Models;
 using BankingWebApi.Domain.Entities;
-using BankingWebApi.Web.Clients;
 using BankingWebApi.Web.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,5 +1,5 @@
-﻿using BankingWebApi.Infrastructure.Interfaces;
-using BankingWebApi.Infrastructure.Records;
+﻿using BankingWebApi.Domain.Interfaces;
+using BankingWebApi.Domain.Records;
 using BankingWebApi.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
     <PackageReference Include="MockQueryable.Moq" Version="7.0.0" />
-    <PackageReference Include="Moq" Version="4.20.2" />
+    <PackageReference Include="Moq" Version="4.20.69" />
     <PackageReference Include="Moq.EntityFrameworkCore" Version="7.0.0.2" />
     <PackageReference Include="xunit" Version="2.5.0" />
     <PackageReference Include="xunit.assert" Version="2.5.0" />
@@ -22,9 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BankingWebApi\Application\Application.csproj" />
-    <ProjectReference Include="..\BankingWebApi\BankingWebApi\Web.csproj" />
     <ProjectReference Include="..\BankingWebApi\Domain\Domain.csproj" />
-    <ProjectReference Include="..\BankingWebApi\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

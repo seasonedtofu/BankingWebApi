@@ -1,10 +1,10 @@
+using BankingWebApi.Application.Clients;
 using BankingWebApi.Application.Interfaces;
 using BankingWebApi.Application.Profiles;
 using BankingWebApi.Application.Services;
+using BankingWebApi.Domain.Interfaces;
 using BankingWebApi.Infrastructure.Data;
-using BankingWebApi.Infrastructure.Interfaces;
 using BankingWebApi.Infrastructure.Repositories;
-using BankingWebApi.Web.Clients;
 using BankingWebApi.Web.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

@@ -1,5 +1,5 @@
-﻿using BankingWebApi.Infrastructure.Interfaces;
-using BankingWebApi.Infrastructure.Records;
+﻿using BankingWebApi.Domain.Interfaces;
+using BankingWebApi.Domain.Records;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

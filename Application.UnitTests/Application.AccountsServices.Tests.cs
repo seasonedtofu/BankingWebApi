@@ -1,7 +1,7 @@
 ﻿using BankingWebApi.Application.Interfaces;
 using BankingWebApi.Application.Models;
 using BankingWebApi.Domain.Entities;
-using BankingWebApi.Infrastructure.Interfaces;
+using BankingWebApi.Domain.Interfaces;
 using AutoMapper;
 using Moq;
 using Microsoft.EntityFrameworkCore;
@@ -137,7 +137,7 @@ namespace BankingWebApi.Application.Tests
             var oldCount = (await _repository.Object.GetAccounts(new AccountsFilter())).Count();
             await _services.Object.CreateAccount(createAccountDto);
             var newCount = (await _repository.Object.GetAccounts(new AccountsFilter())).Count();
-            
+
             Assert.True(newCount == oldCount + 1);
         }
 
